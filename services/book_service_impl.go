@@ -45,6 +45,10 @@ func (b *BookServiceImpl) Create(book *models.CreateBookRequest) (error error) {
 // Delete implements BookService.
 func (b *BookServiceImpl) Delete(id uuid.UUID) (error error) {
 
+	if _, err := b.BookRepository.FindByID(id); err != nil {
+		return err
+	}
+
 	time := time.Now()
 	bookModel := models.Book{
 		ID:        id,
@@ -88,8 +92,13 @@ func (b *BookServiceImpl) FindByID(id uuid.UUID, bk *models.FindByIDBookRequest)
 
 // Update implements BookService.
 func (b *BookServiceImpl) Update(id uuid.UUID, book *models.UpdateBookRequest) (error error) {
+
 	err := b.Validate.Struct(book)
 	if err != nil {
+		return err
+	}
+
+	if _, err := b.BookRepository.FindByID(id); err != nil {
 		return err
 	}
 
@@ -101,6 +110,8 @@ func (b *BookServiceImpl) Update(id uuid.UUID, book *models.UpdateBookRequest) (
 		UpdatedAt:   &time,
 	}
 
-	b.BookRepository.Update(&bookModel)
+	if err := b.BookRepository.Update(&bookModel); err != nil {
+		return err
+	}
 	return nil
 }
