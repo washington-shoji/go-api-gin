@@ -43,11 +43,7 @@ func (b *BookServiceImpl) Create(book *models.CreateBookRequest) (error error) {
 }
 
 // Delete implements BookService.
-func (b *BookServiceImpl) Delete(id uuid.UUID, book *models.DeleteBookRequest) (error error) {
-	err := b.Validate.Struct(book)
-	if err != nil {
-		return err
-	}
+func (b *BookServiceImpl) Delete(id uuid.UUID) (error error) {
 
 	time := time.Now()
 	bookModel := models.Book{
@@ -55,7 +51,9 @@ func (b *BookServiceImpl) Delete(id uuid.UUID, book *models.DeleteBookRequest) (
 		DeletedAt: &time,
 	}
 
-	b.BookRepository.Delete(&bookModel)
+	if err := b.BookRepository.Delete(&bookModel); err != nil {
+		return err
+	}
 	return nil
 }
 
