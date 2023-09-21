@@ -72,14 +72,6 @@ func (handler *BookHandler) Update(ctx *gin.Context) {
 }
 
 func (handler *BookHandler) Delete(ctx *gin.Context) {
-	deleteBookRequest := models.DeleteBookRequest{}
-	err := ctx.ShouldBindJSON(&deleteBookRequest)
-	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
-		return
-	}
-
 	bookID := ctx.Param("id")
 	id, err := uuid.Parse(bookID)
 	if err != nil {
@@ -88,7 +80,11 @@ func (handler *BookHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	handler.BookService.Delete(id, &deleteBookRequest)
+	if err := handler.BookService.Delete(id); err != nil {
+		errResp := helpers.WebResponse(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusOK, errResp)
+		return
+	}
 
 	resp := helpers.WebResponse(http.StatusOK, "Deleted successfully")
 
