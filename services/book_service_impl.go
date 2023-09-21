@@ -29,11 +29,13 @@ func (b *BookServiceImpl) Create(book *models.CreateBookRequest) (error error) {
 	}
 
 	id := uuid.New()
+	time := time.Now()
 
 	bookModel := models.Book{
 		ID:          id,
 		Title:       book.Title,
 		Description: book.Description,
+		CreatedAt:   time,
 	}
 
 	b.BookRepository.Create(&bookModel)
