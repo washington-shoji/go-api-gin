@@ -30,14 +30,12 @@ func (handler *BookHandler) Create(ctx *gin.Context) {
 	createBookRequest := models.CreateBookRequest{}
 	err := ctx.ShouldBindJSON(&createBookRequest)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := handler.BookService.Create(&createBookRequest); err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
@@ -50,21 +48,22 @@ func (handler *BookHandler) Update(ctx *gin.Context) {
 	updateBookRequest := models.UpdateBookRequest{}
 	err := ctx.ShouldBindJSON(&updateBookRequest)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	id := ctx.Param("id")
 	bookID, err := uuid.Parse(id)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	updateBookRequest.ID = bookID
-	handler.BookService.Update(bookID, &updateBookRequest)
+	if err := handler.BookService.Update(bookID, &updateBookRequest); err != nil {
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusNotFound, Error: []string{"Book not found"}})
+		return
+	}
 
 	resp := helpers.WebResponse(http.StatusOK, "Updated successfully")
 
@@ -75,14 +74,12 @@ func (handler *BookHandler) Delete(ctx *gin.Context) {
 	bookID := ctx.Param("id")
 	id, err := uuid.Parse(bookID)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := handler.BookService.Delete(id); err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusNotFound, Error: []string{"Book does not exist"}})
 		return
 	}
 
@@ -92,14 +89,12 @@ func (handler *BookHandler) Delete(ctx *gin.Context) {
 }
 
 func (handler *BookHandler) GetBookByID(ctx *gin.Context) {
-
 	findByIDRequest := models.FindByIDBookRequest{}
 
 	bookID := ctx.Param("id")
 	id, err := uuid.Parse(bookID)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
@@ -107,8 +102,7 @@ func (handler *BookHandler) GetBookByID(ctx *gin.Context) {
 
 	result, err := handler.BookService.FindByID(id, &findByIDRequest)
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusNotFound, Error: []string{"Book not found"}})
 		return
 	}
 
@@ -122,8 +116,7 @@ func (handler *BookHandler) GetAllBooks(ctx *gin.Context) {
 
 	result, err := handler.BookService.FindAll()
 	if err != nil {
-		errResp := helpers.WebResponse(http.StatusBadRequest, err)
-		ctx.JSON(http.StatusOK, errResp)
+		helpers.WebResponseHandler(ctx, helpers.Response{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
 		return
 	}
 
