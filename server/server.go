@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/washington-shoji/gin-api/databases"
+	"github.com/washington-shoji/gin-api/exp"
 	"github.com/washington-shoji/gin-api/handlers"
 	"github.com/washington-shoji/gin-api/repositories"
 	"github.com/washington-shoji/gin-api/routers"
@@ -30,6 +31,9 @@ func InitServer() {
 	bookService := services.NewBookService(bookRepository, validate)
 	bookHandler := handlers.NewBookHandler(bookService)
 	bookRouter := routers.NewRouter(bookHandler)
+
+	testMeta := exp.NewMetaDatabaseImp(db)
+	testMeta.MetaDatabase()
 
 	server := &http.Server{
 		Addr:           ":3030",
