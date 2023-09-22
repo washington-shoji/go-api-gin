@@ -15,6 +15,12 @@ type Book struct {
 	DeletedAt   *time.Time `json:"deletedAt"`
 }
 
+type BookResponse struct {
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+}
+
 type CreateBookRequest struct {
 	Title       string `validate:"required" json:"title"`
 	Description string `validate:"required" json:"description"`
