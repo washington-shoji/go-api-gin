@@ -62,17 +62,29 @@ func (b *BookServiceImpl) Delete(id uuid.UUID) (error error) {
 }
 
 // FindAll implements BookService.
-func (b *BookServiceImpl) FindAll() (books []*models.Book, error error) {
-	books, err := b.BookRepository.FindAll()
+func (b *BookServiceImpl) FindAll() (books []*models.BookResponse, error error) {
+	result, err := b.BookRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
-	return books, nil
+
+	resp := books
+	// ignore the first argument (index)
+	// iterate over the results and append
+	for _, rst_item := range result {
+		// append the BookResponse to resp slice (func response)
+		resp = append(resp, &models.BookResponse{
+			ID:          rst_item.ID,
+			Title:       rst_item.Title,
+			Description: rst_item.Description,
+		})
+	}
+	return resp, nil
 
 }
 
 // FindByID implements BookService.
-func (b *BookServiceImpl) FindByID(id uuid.UUID, bk *models.FindByIDBookRequest) (book *models.Book, error error) {
+func (b *BookServiceImpl) FindByID(id uuid.UUID, bk *models.FindByIDBookRequest) (book *models.BookResponse, error error) {
 
 	err := b.Validate.Struct(bk)
 	if err != nil {
@@ -87,7 +99,14 @@ func (b *BookServiceImpl) FindByID(id uuid.UUID, bk *models.FindByIDBookRequest)
 	if err != nil {
 		return nil, err
 	}
-	return result, nil
+
+	resp := &models.BookResponse{
+		ID:          result.ID,
+		Title:       result.Title,
+		Description: result.Description,
+	}
+
+	return resp, nil
 }
 
 // Update implements BookService.
