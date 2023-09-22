@@ -10,14 +10,12 @@ import (
 	"github.com/washington-shoji/gin-api/services"
 )
 
-type BookHandler struct {
-	BookService services.BookService
+type SuccessMessage struct {
+	Message string `json:"message"`
 }
 
-type Response struct {
-	Code   int         `json:"code"`
-	Status string      `json:"status"`
-	Data   interface{} `json:"data,omitempty"`
+type BookHandler struct {
+	BookService services.BookService
 }
 
 func NewBookHandler(service services.BookService) *BookHandler {
@@ -39,7 +37,11 @@ func (handler *BookHandler) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Created successfully")
+	resp := SuccessMessage{}
+	resp.Message = "Created successfully"
+
+	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: resp})
+
 }
 
 func (handler *BookHandler) Update(ctx *gin.Context) {
@@ -63,7 +65,10 @@ func (handler *BookHandler) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Updated successfully")
+	resp := SuccessMessage{}
+	resp.Message = "Updated successfully"
+
+	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: resp})
 }
 
 func (handler *BookHandler) Delete(ctx *gin.Context) {
@@ -79,7 +84,10 @@ func (handler *BookHandler) Delete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, "Deleted successfully")
+	resp := SuccessMessage{}
+	resp.Message = "Deleted successfully"
+
+	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: resp})
 }
 
 func (handler *BookHandler) GetBookByID(ctx *gin.Context) {
