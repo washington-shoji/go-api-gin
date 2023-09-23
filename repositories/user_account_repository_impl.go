@@ -110,8 +110,17 @@ func (acc *UserAccountRepositoryImp) Update(usrAcc *models.UserAccount) (error e
 }
 
 // Delete implements UserAccountRepository.
-func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
-	panic("unimplemented")
+func (acc *UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
+	query := `
+	UPDATE user_account
+	SET deleted_at = $1 WHERE id = $2
+	`
+
+	_, err := acc.Database.Query(query, usrAcc.DeletedAt, usrAcc.ID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func scanIntoUserAccount(rows *sql.Rows) (*models.UserAccount, error) {
