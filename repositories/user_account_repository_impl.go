@@ -18,6 +18,28 @@ func NewUserAccountRePository(Db *sql.DB) UserAccountRepository {
 	}
 }
 
+// FindAll implements UserAccountRepository.
+func (acc *UserAccountRepositoryImp) FindAll() (usrAcc []*models.UserAccount, error error) {
+	query := `SELECT * FROM user_account WHERE deleted_at IS NULL`
+
+	rows, err := acc.Database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	accs := []*models.UserAccount{}
+
+	for rows.Next() {
+		ac, err := scanIntoUserAccount(rows)
+		if err != nil {
+			return nil, err
+		}
+		accs = append(accs, ac)
+	}
+
+	return accs, nil
+}
+
 // Create implements UserAccountRepository.
 func (acc *UserAccountRepositoryImp) Create(usrAcc *models.UserAccount) (error error) {
 	query := `
@@ -44,11 +66,6 @@ func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error
 	panic("unimplemented")
 }
 
-// FindAll implements UserAccountRepository.
-func (*UserAccountRepositoryImp) FindAll() (usrAcc []*models.UserAccount, error error) {
-	panic("unimplemented")
-}
-
 // FindByID implements UserAccountRepository.
 func (*UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.UserAccount, error error) {
 	panic("unimplemented")
@@ -57,4 +74,20 @@ func (*UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.UserAcco
 // Update implements UserAccountRepository.
 func (*UserAccountRepositoryImp) Update(usrAcc *models.UserAccount) (error error) {
 	panic("unimplemented")
+}
+
+func scanIntoUserAccount(rows *sql.Rows) (*models.UserAccount, error) {
+	usrAcc := &models.UserAccount{}
+	err := rows.Scan(
+		&usrAcc.ID,
+		&usrAcc.Username,
+		&usrAcc.Email,
+		&usrAcc.Password,
+		&usrAcc.FullName,
+		&usrAcc.CreatedAt,
+		&usrAcc.UpdatedAt,
+		&usrAcc.DeletedAt,
+	)
+
+	return usrAcc, err
 }
