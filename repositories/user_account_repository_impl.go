@@ -61,13 +61,30 @@ func (acc *UserAccountRepositoryImp) Create(usrAcc *models.UserAccount) (error e
 	return nil
 }
 
-// Delete implements UserAccountRepository.
-func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
-	panic("unimplemented")
+// FindByID implements UserAccountRepository.
+func (acc *UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.UserAccount, error error) {
+
+	query := `SELECT * FROM user_account WHERE id = $1 AND deleted_at IS NULL`
+
+	rows, err := acc.Database.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		acc, err := scanIntoUserAccount(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		usrAcc = acc
+	}
+
+	return usrAcc, err
 }
 
-// FindByID implements UserAccountRepository.
-func (*UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.UserAccount, error error) {
+// Delete implements UserAccountRepository.
+func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
 	panic("unimplemented")
 }
 
