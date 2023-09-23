@@ -19,6 +19,16 @@ func CreateTables(db *sql.DB) error {
 		updated_at TIMESTAMP,
 		deleted_at TIMESTAMP
 	);
+	CREATE TABLE IF NOT EXISTS user_account (
+		id uuid PRIMARY KEY NOT NULL,
+		user_name VARCHAR(50) UNIQUE NOT NULL,
+		email VARCHAR(50) UNIQUE NOT NULL,
+		full_name VARCHAR(50) NOT NULL,
+		encrypted_password VARCHAR(256) NOT NULL,
+		created_at TIMESTAMP NOT NULL,
+		updated_at TIMESTAMP,
+		deleted_at TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(query)
