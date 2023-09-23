@@ -20,7 +20,23 @@ func NewUserAccountRePository(Db *sql.DB) UserAccountRepository {
 
 // Create implements UserAccountRepository.
 func (acc *UserAccountRepositoryImp) Create(usrAcc *models.UserAccount) (error error) {
-	panic("unimplemented")
+	query := `
+			INSERT INTO user_account (id, user_name, email, first_name, last_name, encrypted_password, created_at, updated_at, deleted_at)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+			`
+
+	_, err := acc.Database.Query(
+		query,
+		usrAcc.Username,
+		usrAcc.Email,
+		usrAcc.Password,
+		usrAcc.FullName,
+		usrAcc.CreatedAt,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Delete implements UserAccountRepository.
