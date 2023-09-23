@@ -83,13 +83,34 @@ func (acc *UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.User
 	return usrAcc, err
 }
 
-// Delete implements UserAccountRepository.
-func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
-	panic("unimplemented")
+// Update implements UserAccountRepository.
+func (acc *UserAccountRepositoryImp) Update(usrAcc *models.UserAccount) (error error) {
+	query := `
+	UPDATE user_account
+	SET 
+	user_name = $2, 
+	email = $3,
+	password = $4,
+	full_name = $5,
+	updated_at = $6
+	`
+
+	_, err := acc.Database.Query(query,
+		usrAcc.Username,
+		usrAcc.Email,
+		usrAcc.Password,
+		usrAcc.FullName,
+		usrAcc.UpdatedAt,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-// Update implements UserAccountRepository.
-func (*UserAccountRepositoryImp) Update(usrAcc *models.UserAccount) (error error) {
+// Delete implements UserAccountRepository.
+func (*UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error error) {
 	panic("unimplemented")
 }
 
