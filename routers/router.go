@@ -7,7 +7,10 @@ import (
 	"github.com/washington-shoji/gin-api/handlers"
 )
 
-func NewRouter(bookHandler *handlers.BookHandler) *gin.Engine {
+func NewRouter(
+	bookHandler *handlers.BookHandler,
+	userAccountHandler *handlers.UserAccountHandler,
+) *gin.Engine {
 	service := gin.Default()
 
 	service.GET("/health-check", func(ctx *gin.Context) {
@@ -25,6 +28,10 @@ func NewRouter(bookHandler *handlers.BookHandler) *gin.Engine {
 	bookRouter.POST("", bookHandler.Create)
 	bookRouter.PATCH("/:id", bookHandler.Update)
 	bookRouter.DELETE("/:id", bookHandler.Delete)
+
+	userAccRouter := router.Group("/account")
+	userAccRouter.GET("", userAccountHandler.GetAllUserAccounts)
+	userAccRouter.POST("", userAccountHandler.Create)
 
 	return service
 }
