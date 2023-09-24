@@ -27,9 +27,15 @@ func InitServer() {
 	validate := validator.New()
 
 	bookRepository := repositories.NewBookRepositoryImp(db)
+	userAccRepository := repositories.NewUserAccountRePository(db)
+
 	bookService := services.NewBookService(bookRepository, validate)
+	userAccService := services.NewUserAccountService(userAccRepository, validate)
+
 	bookHandler := handlers.NewBookHandler(bookService)
-	bookRouter := routers.NewRouter(bookHandler)
+	userAccHandler := handlers.NewUserAccountHandler(userAccService)
+
+	bookRouter := routers.NewRouter(bookHandler, userAccHandler)
 
 	// testMeta := exp.NewMetaDatabaseImp(db)
 	// testMeta.MetaDatabase()
