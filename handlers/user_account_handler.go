@@ -45,3 +45,20 @@ func (handler *UserAccountHandler) Create(ctx *gin.Context) {
 		Status: http.StatusOK, Data: resp,
 	})
 }
+
+func (handler *UserAccountHandler) GetAllUserAccounts(ctx *gin.Context) {
+	result, err := handler.UserAccountService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{
+			Status: http.StatusBadGateway,
+			Error:  []string{"Server Error"},
+		})
+		return
+	}
+
+	ctx.Header("Content-Type", "application/json")
+	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{
+		Status: http.StatusOK,
+		Data:   result,
+	})
+}
