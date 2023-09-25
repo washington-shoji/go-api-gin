@@ -15,6 +15,13 @@ type UserAccountServiceImp struct {
 	Validate              *validator.Validate
 }
 
+func NewUserAccountService(usrAccRep repositories.UserAccountRepository, validate *validator.Validate) UserAccountService {
+	return &UserAccountServiceImp{
+		UserAccountRepository: usrAccRep,
+		Validate:              validate,
+	}
+}
+
 // Create implements UserAccountService.
 func (acc *UserAccountServiceImp) Create(usrAcc *models.CreateUserAccountRequest) (error error) {
 	err := acc.Validate.Struct(usrAcc)
@@ -126,11 +133,4 @@ func (acc *UserAccountServiceImp) Update(id uuid.UUID, usrAcc *models.UpdateUser
 		return err
 	}
 	return nil
-}
-
-func NewUserAccountService(usrAccRep repositories.UserAccountRepository, validate *validator.Validate) UserAccountService {
-	return &UserAccountServiceImp{
-		UserAccountRepository: usrAccRep,
-		Validate:              validate,
-	}
 }
