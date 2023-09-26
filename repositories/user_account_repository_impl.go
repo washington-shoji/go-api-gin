@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -43,16 +44,16 @@ func (acc *UserAccountRepositoryImp) FindAll() (usrAcc []*models.UserAccount, er
 // Create implements UserAccountRepository.
 func (acc *UserAccountRepositoryImp) Create(usrAcc *models.UserAccount) (error error) {
 	query := `
-			INSERT INTO user_account (id, user_name, email, first_name, last_name, encrypted_password, created_at, updated_at, deleted_at)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+			INSERT INTO user_account (id, user_name, email, full_name, encrypted_password, created_at)
+			VALUES ($1, $2, $3, $4, $5, $6);
 			`
-
 	_, err := acc.Database.Query(
 		query,
+		usrAcc.ID,
 		usrAcc.Username,
 		usrAcc.Email,
-		usrAcc.Password,
 		usrAcc.FullName,
+		usrAcc.Password,
 		usrAcc.CreatedAt,
 	)
 	if err != nil {
@@ -79,8 +80,7 @@ func (acc *UserAccountRepositoryImp) FindByID(id uuid.UUID) (usrAcc *models.User
 
 		usrAcc = acc
 	}
-
-	return usrAcc, err
+	return usrAcc, fmt.Errorf("account with number [%s] not found", id)
 }
 
 // Update implements UserAccountRepository.
@@ -90,12 +90,14 @@ func (acc *UserAccountRepositoryImp) Update(usrAcc *models.UserAccount) (error e
 	SET 
 	user_name = $2, 
 	email = $3,
-	password = $4,
+	encrypted_password = $4,
 	full_name = $5,
 	updated_at = $6
+	WHERE id = $1
 	`
 
 	_, err := acc.Database.Query(query,
+		usrAcc.ID,
 		usrAcc.Username,
 		usrAcc.Email,
 		usrAcc.Password,
@@ -123,14 +125,40 @@ func (acc *UserAccountRepositoryImp) Delete(usrAcc *models.UserAccount) (error e
 	return nil
 }
 
+// FindByUsername implements UserAccountRepository.
+func (acc *UserAccountRepositoryImp) FindByUsername(username string) (usrAcc *models.UserAccount, error error) {
+
+	query := `SELECT * FROM user_account WHERE user_name = $1 AND deleted_at IS NULL`
+
+	rows, err := acc.Database.Query(query, username)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		acc, err := scanIntoUserAccount(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		usrAcc = acc
+	}
+
+	if usrAcc == nil {
+		return nil, fmt.Errorf("account with number [%s] not found", username)
+	}
+	return usrAcc, nil
+}
+
 func scanIntoUserAccount(rows *sql.Rows) (*models.UserAccount, error) {
+
 	usrAcc := &models.UserAccount{}
 	err := rows.Scan(
 		&usrAcc.ID,
 		&usrAcc.Username,
 		&usrAcc.Email,
-		&usrAcc.Password,
 		&usrAcc.FullName,
+		&usrAcc.Password,
 		&usrAcc.CreatedAt,
 		&usrAcc.UpdatedAt,
 		&usrAcc.DeletedAt,
