@@ -33,8 +33,8 @@ type CreateUserAccountRequest struct {
 }
 
 type UpdateUserAccountRequest struct {
-	Username string `validate:"required" json:"username"`
-	Password string `validate:"required" json:"password"`
-	Email    string `validate:"required" json:"email"`
-	FullName string `validate:"required" json:"fullName"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Email    string `json:"email"`
+	FullName string `json:"fullName"`
 }
