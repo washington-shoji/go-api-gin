@@ -35,14 +35,18 @@ func InitServer() {
 	bookHandler := handlers.NewBookHandler(bookService)
 	userAccHandler := handlers.NewUserAccountHandler(userAccService)
 
-	bookRouter := routers.NewRouter(bookHandler, userAccHandler)
+	loginService := services.NewLoginService(userAccRepository, validate)
+
+	loginHandler := handlers.NewLoginHandler(loginService)
+
+	router := routers.NewRouter(bookHandler, userAccHandler, loginHandler)
 
 	// testMeta := exp.NewMetaDatabaseImp(db)
 	// testMeta.MetaDatabase()
 
 	server := &http.Server{
 		Addr:           ":3030",
-		Handler:        bookRouter,
+		Handler:        router,
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 		MaxHeaderBytes: 1 << 20,
