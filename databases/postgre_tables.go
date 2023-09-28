@@ -29,6 +29,14 @@ func CreateTables(db *sql.DB) error {
 		updated_at TIMESTAMP,
 		deleted_at TIMESTAMP
 	);
+	CREATE TABLE IF NOT EXISTS table_top_game (
+		id uuid PRIMARY KEY NOT NULL,
+		name VARCHAR(100) UNIQUE NOT NULL,
+		game_detail JSONB,
+		created_at TIMESTAMP NOT NULL,
+		updated_at TIMESTAMP,
+		deleted_at TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(query)
