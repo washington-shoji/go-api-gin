@@ -2,7 +2,9 @@ package repositories
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -22,11 +24,16 @@ func NewTableTopGameRepositoryImpl(Db *sql.DB) TableTopGameRepository {
 // Create implements TableTopGameRepository.
 func (tbg *TableTopGameRepositoryImpl) Create(game *models.TableTopGame) error {
 	query := `INSERT INTO table_top_game (id, name, game_detail, created_at)
-	VALUES ($1, $2, $3, $4 = now())
+	VALUES ($1, $2, $3, $4)
 	`
 
-	_, err := tbg.Database.Query(query, game.ID, game.Name, game.GameDetail)
+	jsonbData, err := json.Marshal(game.GameDetail)
 	if err != nil {
+		return err
+	}
+
+	time := time.Now()
+	if _, err := tbg.Database.Query(query, game.ID, game.Name, jsonbData, time); err != nil {
 		return err
 	}
 
@@ -34,13 +41,13 @@ func (tbg *TableTopGameRepositoryImpl) Create(game *models.TableTopGame) error {
 }
 
 // Update implements TableTopGameRepository.
-func (tbg *TableTopGameRepositoryImpl) Update(game *models.TableTopGame) error {
+func (tbg *TableTopGameRepositoryImpl) Update(id uuid.UUID, game *models.TableTopGame) error {
 	query := `UPDATE table_top_game
 			SET name = $1, game_detail = $1, updated_at = now()
 			WHERE id = $3
 	`
 
-	_, err := tbg.Database.Query(query, game.Name, game.GameDetail, game.ID)
+	_, err := tbg.Database.Query(query, game.Name, game.GameDetail, id)
 	if err != nil {
 		return err
 	}
@@ -69,21 +76,43 @@ func (tbg *TableTopGameRepositoryImpl) FindAll() ([]*models.TableTopGame, error)
 
 	rows, err := tbg.Database.Query(query)
 	if err != nil {
+		fmt.Println("err 1", err)
 		return nil, err
 	}
 
-	games := []*models.TableTopGame{}
-
 	for rows.Next() {
-		gm, err := scanIntoGame(rows)
-		if err != nil {
+		var jsonData []byte
+
+		if err := rows.Scan(&jsonData); err != nil {
+			fmt.Println("Error scanning JSONB data:", err)
 			return nil, err
 		}
 
-		games = append(games, gm)
+		var games models.TableTopGameResp
+
+		if err := json.Unmarshal(jsonData, &games); err != nil {
+			fmt.Println("Error unmarshalling JSONB data:", err)
+			return nil, err
+		}
+
+		fmt.Println("games", games)
 	}
 
-	return games, nil
+	// games := []*models.TableTopGame{}
+
+	// for rows.Next() {
+	// 	gm, err := scanIntoGame(rows)
+	// 	if err != nil {
+	// 		fmt.Println("err 2", err)
+	// 		return nil, err
+	// 	}
+
+	// 	games = append(games, gm)
+	// }
+
+	// return games, nil
+
+	return nil, nil
 
 }
 
