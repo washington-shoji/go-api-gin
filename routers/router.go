@@ -3,17 +3,24 @@ package routers
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/washington-shoji/gin-api/handlers"
-	"github.com/washington-shoji/gin-api/middleware"
 )
 
 func NewRouter(
 	bookHandler *handlers.BookHandler,
 	userAccountHandler *handlers.UserAccountHandler,
 	loginHandler *handlers.LoginHandler,
+	tableTopGameHandler *handlers.TableTopGameHandler,
 ) *gin.Engine {
 	service := gin.Default()
+
+	service.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+	}))
 
 	service.GET("/health-check", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "server up and running")
@@ -29,7 +36,7 @@ func NewRouter(
 	loginRouter.POST("", loginHandler.Login)
 
 	bookRouter := router.Group("/book")
-	bookRouter.Use(middleware.JwtAuthMiddleware())
+	//bookRouter.Use(middleware.JwtAuthMiddleware())
 	bookRouter.GET("", bookHandler.GetAllBooks)
 	bookRouter.GET("/:id", bookHandler.GetBookByID)
 	bookRouter.POST("", bookHandler.Create)
@@ -42,6 +49,13 @@ func NewRouter(
 	userAccRouter.POST("", userAccountHandler.Create)
 	userAccRouter.PATCH("/:id", userAccountHandler.Update)
 	userAccRouter.DELETE("/:id", userAccountHandler.Delete)
+
+	tableTopGameRouter := router.Group("/table-top")
+	tableTopGameRouter.GET("", tableTopGameHandler.FindAll)
+	tableTopGameRouter.GET("/:id", tableTopGameHandler.FindByID)
+	tableTopGameRouter.POST("", tableTopGameHandler.Create)
+	tableTopGameRouter.PATCH("/:id", tableTopGameHandler.Update)
+	tableTopGameRouter.DELETE("/:id", tableTopGameHandler.Delete)
 
 	return service
 }
