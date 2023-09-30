@@ -76,44 +76,21 @@ func (tbg *TableTopGameRepositoryImpl) FindAll() ([]*models.TableTopGame, error)
 
 	rows, err := tbg.Database.Query(query)
 	if err != nil {
-		fmt.Println("err 1", err)
 		return nil, err
 	}
 
+	games := []*models.TableTopGame{}
+
 	for rows.Next() {
-		var jsonData []byte
-
-		if err := rows.Scan(&jsonData); err != nil {
-			fmt.Println("Error scanning JSONB data:", err)
+		gm, err := scanIntoGame(rows)
+		if err != nil {
 			return nil, err
 		}
 
-		var games models.TableTopGameResp
-
-		if err := json.Unmarshal(jsonData, &games); err != nil {
-			fmt.Println("Error unmarshalling JSONB data:", err)
-			return nil, err
-		}
-
-		fmt.Println("games", games)
+		games = append(games, gm)
 	}
 
-	// games := []*models.TableTopGame{}
-
-	// for rows.Next() {
-	// 	gm, err := scanIntoGame(rows)
-	// 	if err != nil {
-	// 		fmt.Println("err 2", err)
-	// 		return nil, err
-	// 	}
-
-	// 	games = append(games, gm)
-	// }
-
-	// return games, nil
-
-	return nil, nil
-
+	return games, nil
 }
 
 // FindByID implements TableTopGameRepository.
@@ -134,14 +111,20 @@ func (tbg *TableTopGameRepositoryImpl) FindByID(id uuid.UUID) (*models.TableTopG
 
 func scanIntoGame(rows *sql.Rows) (*models.TableTopGame, error) {
 	game := &models.TableTopGame{}
+	var jsonColumnData []byte
 	err := rows.Scan(
 		&game.ID,
 		&game.Name,
-		&game.GameDetail,
+		&jsonColumnData,
 		&game.CreatedAt,
 		&game.UpdatedAt,
 		&game.DeletedAt,
 	)
+
+	if err := json.Unmarshal(jsonColumnData, &game.GameDetail); err != nil {
+		fmt.Println("Error unmarshalling JSONB data:", err)
+		return nil, err
+	}
 
 	return game, err
 }
