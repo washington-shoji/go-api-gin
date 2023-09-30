@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -23,16 +22,13 @@ func NewTableTopGameHandler(service services.TableTopGameService) *TableTopGameH
 
 func (service *TableTopGameHandler) Create(ctx *gin.Context) {
 	createTblGameReq := models.TableTopGameReq{}
-	fmt.Println("createTblGameReq", createTblGameReq)
 	err := ctx.ShouldBindJSON(&createTblGameReq)
 	if err != nil {
-		fmt.Println("err 1", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := service.Service.Create(&createTblGameReq); err != nil {
-		fmt.Println("err 2", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
@@ -97,12 +93,6 @@ func (handler *TableTopGameHandler) Delete(ctx *gin.Context) {
 }
 
 func (handler *TableTopGameHandler) FindByID(ctx *gin.Context) {
-	findByIDReq := models.TableTopGameReq{}
-	err := ctx.ShouldBindJSON(&findByIDReq)
-	if err != nil {
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
-		return
-	}
 
 	tblId := ctx.Param("id")
 	id, err := uuid.Parse(tblId)
@@ -124,7 +114,6 @@ func (handler *TableTopGameHandler) FindByID(ctx *gin.Context) {
 func (handler *TableTopGameHandler) FindAll(ctx *gin.Context) {
 	result, err := handler.Service.FindAll()
 	if err != nil {
-		fmt.Println("err 3", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
 		return
 	}
