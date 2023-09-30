@@ -97,7 +97,7 @@ func (tbg *TableTopGameRepositoryImpl) FindAll() ([]*models.TableTopGame, error)
 func (tbg *TableTopGameRepositoryImpl) FindByID(id uuid.UUID) (*models.TableTopGame, error) {
 	query := `SELECT * from table_top_game WHERE id = $1 AND deleted_at IS NULL`
 
-	rows, err := tbg.Database.Query(query)
+	rows, err := tbg.Database.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
