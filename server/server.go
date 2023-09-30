@@ -28,18 +28,26 @@ func InitServer() {
 
 	bookRepository := repositories.NewBookRepositoryImp(db)
 	userAccRepository := repositories.NewUserAccountRePository(db)
+	tableTopGameRepository := repositories.NewTableTopGameRepositoryImpl(db)
 
 	bookService := services.NewBookService(bookRepository, validate)
 	userAccService := services.NewUserAccountService(userAccRepository, validate)
+	tableTopGameService := services.NewTableTopGameService(tableTopGameRepository)
 
 	bookHandler := handlers.NewBookHandler(bookService)
 	userAccHandler := handlers.NewUserAccountHandler(userAccService)
+	tableTopGameHandler := handlers.NewTableTopGameHandler(tableTopGameService)
 
 	loginService := services.NewLoginService(userAccRepository, validate)
 
 	loginHandler := handlers.NewLoginHandler(loginService)
 
-	router := routers.NewRouter(bookHandler, userAccHandler, loginHandler)
+	router := routers.NewRouter(
+		bookHandler,
+		userAccHandler,
+		loginHandler,
+		tableTopGameHandler,
+	)
 
 	// testMeta := exp.NewMetaDatabaseImp(db)
 	// testMeta.MetaDatabase()
