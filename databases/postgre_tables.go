@@ -37,6 +37,13 @@ func CreateTables(db *sql.DB) error {
 		updated_at TIMESTAMP,
 		deleted_at TIMESTAMP
 	);
+	CREATE TABLE IF NOT EXISTS table_exp (
+		id uuid PRIMARY KEY NOT NULL,
+		exp_json JSONB,
+		created_at TIMESTAMP NOT NULL,
+		updated_at TIMESTAMP,
+		deleted_at TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(query)
