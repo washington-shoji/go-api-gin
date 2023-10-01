@@ -13,6 +13,7 @@ func NewRouter(
 	userAccountHandler *handlers.UserAccountHandler,
 	loginHandler *handlers.LoginHandler,
 	tableTopGameHandler *handlers.TableTopGameHandler,
+	expHandler *handlers.ExpHandler,
 ) *gin.Engine {
 	service := gin.Default()
 
@@ -56,6 +57,9 @@ func NewRouter(
 	tableTopGameRouter.POST("", tableTopGameHandler.Create)
 	tableTopGameRouter.PATCH("/:id", tableTopGameHandler.Update)
 	tableTopGameRouter.DELETE("/:id", tableTopGameHandler.Delete)
+
+	expRouter := router.Group("/exp")
+	expRouter.POST("", expHandler.Exp)
 
 	return service
 }
