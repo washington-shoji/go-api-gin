@@ -42,11 +42,14 @@ func InitServer() {
 
 	loginHandler := handlers.NewLoginHandler(loginService)
 
+	expHandler := handlers.NewExpHandler(db)
+
 	router := routers.NewRouter(
 		bookHandler,
 		userAccHandler,
 		loginHandler,
 		tableTopGameHandler,
+		expHandler,
 	)
 
 	// testMeta := exp.NewMetaDatabaseImp(db)
