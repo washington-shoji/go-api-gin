@@ -6,10 +6,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
+	"github.com/washington-shoji/gin-api/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,7 +34,35 @@ func NewExpHandler(Db *sql.DB) *ExpHandler {
 	}
 }
 
-func (handler *ExpHandler) Exp(ctx *gin.Context) {
+func (handler *ExpHandler) ExpGetAll(ctx *gin.Context) {
+	query := `SELECT * from table_exp WHERE deleted_at IS NULL`
+
+	rows, err := handler.Database.Query(query)
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Exp not found"}})
+		return
+	}
+
+	expRes := []*DynamicStruct{}
+
+	for rows.Next() {
+		exp, err := scanIntoExp(rows)
+		if err != nil {
+			fmt.Println("err scan", err)
+			return
+		}
+
+		expRes = append(expRes, exp)
+	}
+
+	fmt.Println("expRes", expRes)
+
+	ctx.Header("Content-Type", "application/json")
+	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: expRes})
+
+}
+
+func (handler *ExpHandler) ExpCreate(ctx *gin.Context) {
 	raw, err := ctx.GetRawData()
 	if err != nil {
 		fmt.Println("err 1", err)
@@ -98,3 +128,22 @@ func (handler *ExpHandler) Exp(ctx *gin.Context) {
 
 // 	fmt.Println("data", data)
 // }
+
+func scanIntoExp(rows *sql.Rows) (*DynamicStruct, error) {
+	data := &DynamicStruct{}
+	var jsonColumnData []byte
+	err := rows.Scan(
+		&data.ID,
+		&jsonColumnData,
+		&data.CreatedAt,
+		&data.UpdatedAt,
+		&data.DeletedAt,
+	)
+
+	if err := json.Unmarshal(jsonColumnData, &data); err != nil {
+		fmt.Println("Error unmarshalling JSONB data:", err)
+		return nil, err
+	}
+
+	return data, err
+}
