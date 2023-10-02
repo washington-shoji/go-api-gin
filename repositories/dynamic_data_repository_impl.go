@@ -25,7 +25,7 @@ func NewDynamicDataRepositoryImpl(Db *sql.DB) DynamicDataRepository {
 // Create implements DynamicDataRepository.
 func (repo *DynamicDataRepositoryImpl) Create(dyn *models.DynamicData) error {
 
-	query := `INSERT INTO table_exp (id, exp_json, created_at)
+	query := `INSERT INTO dynamic_data (id, data, created_at)
 	VALUES ($1, $2, $3)
 	`
 	id := uuid.New()
@@ -41,8 +41,8 @@ func (repo *DynamicDataRepositoryImpl) Create(dyn *models.DynamicData) error {
 
 // Update implements DynamicDataRepository.
 func (repo *DynamicDataRepositoryImpl) Update(id uuid.UUID, dyn *models.DynamicData) error {
-	query := `UPDATE table_exp
-	SET exp_json = $1, updated_at = $2
+	query := `UPDATE dynamic_data
+	SET data = $1, updated_at = $2
 	WHERE id = $3
 	`
 
@@ -57,7 +57,7 @@ func (repo *DynamicDataRepositoryImpl) Update(id uuid.UUID, dyn *models.DynamicD
 
 // Delete implements DynamicDataRepository.
 func (repo *DynamicDataRepositoryImpl) Delete(id uuid.UUID) error {
-	query := `UPDATE table_exp
+	query := `UPDATE dynamic_data
 	SET deleted_at = $1
 	WHERE id = $2
 	`
@@ -72,7 +72,7 @@ func (repo *DynamicDataRepositoryImpl) Delete(id uuid.UUID) error {
 
 // FindAll implements DynamicDataRepository.
 func (repo *DynamicDataRepositoryImpl) FindAll() ([]*models.DynamicData, error) {
-	query := `SELECT * from table_exp WHERE deleted_at IS NULL`
+	query := `SELECT * from dynamic_data WHERE deleted_at IS NULL`
 
 	rows, err := repo.Database.Query(query)
 	if err != nil {
@@ -95,7 +95,7 @@ func (repo *DynamicDataRepositoryImpl) FindAll() ([]*models.DynamicData, error) 
 
 // FindById implements DynamicDataRepository.
 func (repo *DynamicDataRepositoryImpl) FindById(id uuid.UUID) (*models.DynamicData, error) {
-	query := `SELECT * from table_exp WHERE id = $1 AND deleted_at IS NULL`
+	query := `SELECT * from dynamic_data WHERE id = $1 AND deleted_at IS NULL`
 
 	rows, err := repo.Database.Query(query, id)
 	if err != nil {
