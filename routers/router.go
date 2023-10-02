@@ -61,7 +61,10 @@ func NewRouter(
 
 	dynamicDataRouter := router.Group("/dynamic")
 	dynamicDataRouter.GET("", dynamicData.FindAll)
+	dynamicDataRouter.GET("/:id", dynamicData.FindByID)
 	dynamicDataRouter.POST("", dynamicData.Create)
+	dynamicDataRouter.PATCH("/:id", dynamicData.Update)
+	dynamicDataRouter.DELETE("/:id", dynamicData.Delete)
 
 	expRouter := router.Group("/exp")
 	expRouter.POST("", expHandler.ExpCreate)
