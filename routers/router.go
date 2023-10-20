@@ -24,6 +24,9 @@ func NewRouter(
 		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
 	}))
 
+	service.LoadHTMLGlob("templates/**/*")
+	service.Static("/static", "./static")
+
 	service.GET("/health-check", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "server up and running")
 	})
@@ -69,6 +72,12 @@ func NewRouter(
 	expRouter := router.Group("/exp")
 	expRouter.POST("", expHandler.ExpCreate)
 	expRouter.GET("", expHandler.ExpGetAll)
+
+	htmlRouter := router.Group("/exp-html")
+	htmlRouter.GET("/book", bookHandler.RenderBookForm)
+	htmlRouter.POST("/book", bookHandler.CreateBookForm)
+
+	htmlRouter.GET("/base", bookHandler.RenderPartials)
 
 	return service
 }
