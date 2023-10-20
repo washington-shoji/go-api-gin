@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -122,4 +123,51 @@ func (handler *BookHandler) GetAllBooks(ctx *gin.Context) {
 
 	ctx.Header("Content-Type", "application/json")
 	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: result})
+}
+
+func (handler *BookHandler) RenderBookForm(ctx *gin.Context) {
+	books, err := handler.BookService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "index.html", gin.H{
+		"Books": books,
+	})
+}
+
+func (handler *BookHandler) CreateBookForm(ctx *gin.Context) {
+	if err := ctx.Request.Form; err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
+	createBook := models.CreateBookRequest{
+		Title:       ctx.Request.FormValue("title"),
+		Description: ctx.Request.FormValue("description"),
+	}
+
+	if createBook != (models.CreateBookRequest{}) {
+		if err := handler.BookService.Create(&createBook); err != nil {
+			fmt.Println("Error creating book", err)
+			helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Could not create book"}})
+			return
+		}
+	}
+
+	books, err := handler.BookService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
+
+	ctx.HTML(http.StatusOK, "index.html", gin.H{
+		"Books": books,
+	})
+}
+
+func (handler *BookHandler) RenderPartials(ctx *gin.Context) {
+	data := gin.H{}
+
+	ctx.HTML(http.StatusOK, "index.html", data)
 }
