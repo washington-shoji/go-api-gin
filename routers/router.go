@@ -78,6 +78,8 @@ func NewRouter(
 	htmlRouter.POST("/book", bookHandler.CreateBookForm)
 
 	htmlRouter.GET("/base", bookHandler.RenderPartials)
+	htmlRouter.GET("/content", bookHandler.RenderContent)
+	htmlRouter.GET("/home", bookHandler.RenderHomepage)
 
 	return service
 }
