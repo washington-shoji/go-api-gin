@@ -167,7 +167,25 @@ func (handler *BookHandler) CreateBookForm(ctx *gin.Context) {
 }
 
 func (handler *BookHandler) RenderPartials(ctx *gin.Context) {
-	data := gin.H{}
+	data := gin.H{
+		"item": "This is a new item from index",
+	}
 
 	ctx.HTML(http.StatusOK, "index.html", data)
+}
+
+func (handler *BookHandler) RenderContent(ctx *gin.Context) {
+	data := gin.H{
+		"item": "This is a new item from content",
+	}
+
+	ctx.HTML(http.StatusOK, "content", data)
+}
+
+func (handler *BookHandler) RenderHomepage(ctx *gin.Context) {
+	data := gin.H{
+		"item": "This is the home page",
+	}
+
+	ctx.HTML(http.StatusOK, "home", data)
 }
