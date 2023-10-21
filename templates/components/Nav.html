@@ -1,20 +1,21 @@
 {{define "nav"}}
 
-<button id="navButton" class="inline-flex p-1 m-1 fixed top-4 bg-red-600 left-28 text-white rounded-md shadow-md z-30"
-    _="on click toggle between .hidden and .flex on #navMenu on click toggle between .left-0 and .left-28 on #navButton on click toggle between .bg-red-600 and .bg-black on #navButton on click toggle between .flex and .hidden on #menuIconOpen on click toggle between .hidden and .flex on #menuIconClose">
-    <svg id="menuIconClose" class="w-5 h-5 hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-        viewBox="0 0 12 10">
+<button class="inline-flex p-1 m-1 fixed top-4  text-white rounded-md shadow-md z-30"
+    :class="{'bg-red-600 left-28': open, 'bg-black left-0': !open}" @click="open = !open">
+    <svg class="w-5 h-5 hidden" :class="{'hidden': open, 'flex': !open}" aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="m7 9 4-4-4-4M1 9l4-4-4-4" />
     </svg>
-    <svg id="menuIconOpen" class="w-5 h-5 flex" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-        viewBox="0 0 12 10">
+    <svg class="w-5 h-5 hidden" :class="{'hidden': !open, 'flex': open}" aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 10">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M5 1 1 5l4 4m6-8L7 5l4 4" />
     </svg>
 </button>
 
-<nav id="navMenu" class="flex-col px-2 bg-black text-zinc-50 z-20">
+<nav id="navMenu" class="flex-col px-2 bg-black text-zinc-50 z-20" :class="{'hidden': !open, 'flex': open}">
+
     <h2 class="mt-6 text-lg uppercase shadow-2xl">Go HTMX App</h2>
     <div class="flex flex-col justify-between h-full shadow-2xl">
         <div class="mt-6">
