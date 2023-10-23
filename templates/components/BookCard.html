@@ -1,0 +1,39 @@
+{{define "book-card"}}
+<div class=" flex flex-col md:flex-row gap-6 bg-black rounded-lg p-4 shadow-lg">
+    <div class="flex items-center justify-center w-full">
+        <img class="rounded-lg" src="https://m.media-amazon.com/images/I/41gr3r3FSWL.jpg" alt="book-cover" />
+    </div>
+
+    <div class="flex flex-col gap-8 justify-between">
+        <div class="flex flex-col gap-8 text-white">
+            <h3 class="text-3xl">{{ .Title}}</h3>
+            <p>{{ .Description}}</p>
+            <div class=" flex items-center gap-2">
+                <span>
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                        viewBox="0 0 22 20">
+                        <path
+                            d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
+                    </svg>
+                </span>
+                <span>views</span>
+            </div>
+        </div>
+
+        <div>
+            <button
+                class="flex justify-center items-center gap-2 bg-black rounded-md text-white shadow-md p-2 hover:ring-1 hover:ring-offset-1 ring-white border-white border-2"
+                href="#">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    viewBox="0 0 20 18">
+                    <path
+                        d="M12.687 14.408a3.01 3.01 0 0 1-1.533.821l-3.566.713a3 3 0 0 1-3.53-3.53l.713-3.566a3.01 3.01 0 0 1 .821-1.533L10.905 2H2.167A2.169 2.169 0 0 0 0 4.167v11.666A2.169 2.169 0 0 0 2.167 18h11.666A2.169 2.169 0 0 0 16 15.833V11.1l-3.313 3.308Zm5.53-9.065.546-.546a2.518 2.518 0 0 0 0-3.56 2.576 2.576 0 0 0-3.559 0l-.547.547 3.56 3.56Z" />
+                    <path
+                        d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z" />
+                </svg>
+                Edit
+            </button>
+        </div>
+    </div>
+</div>
+{{end}}
