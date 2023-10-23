@@ -1,0 +1,46 @@
+{{define "book-hero"}}
+
+<div id="body-content" class=" flex flex-col gap-4 justify-stretch sm:flex-row w-full m-auto">
+    <div class="w-full h-[40vh] bg-black text-white rounded-lg shadow-md p-4">
+        <p class="uppercase">Summary of books</p>
+        <div class=" flex gap-4">
+            <div
+                class=" flex flex-col items-center justify-center bg-white text-black font-semibold  rounded-md p-4 mt-6">
+                <span>Total books</span>
+                <span class="text-8xl">{{ .booksLen}}</span>
+            </div>
+            <div
+                class=" flex flex-col items-center justify-center bg-white text-black font-semibold  rounded-md p-4 mt-6">
+                <span>New books</span>
+                <span class="text-8xl">{{ .booksLen}}</span>
+            </div>
+        </div>
+    </div>
+    <div class="grid gap-4 grid-cols-1 w-full bg-black p-4 rounded-lg">
+        <div class=" bg-white text-black rounded-lg shadow-md p-4">
+            <p class="uppercase">Top rated books</p>
+            <h2>{{ .titleOne}}</h2>
+        </div>
+        <div class="grid gap-4 grid-cols-1 sm:grid-cols-2">
+            <div class="col-span-1 bg-white text-black rounded-lg shadow-md p-4">
+                <p class="uppercase">Newly added books</p>
+                <p>{{ .titleTwo}}</p>
+            </div>
+            <div class="flex flex-col justify-between gap-2col-span-1 bg-white text-black rounded-lg shadow-md p-4">
+                <p class="uppercase">Add a new book</p>
+                <button
+                    class="flex justify-center items-center gap-2 bg-black rounded-md text-white shadow-md p-2 hover:ring-2 hover:ring-offset-2 hover:ring-black"
+                    href="#" hx-get="/api/exp-html/book" hx-target="#body-content" hx-swap="innerHTML">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 18 18">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 1v16M1 9h16" />
+                    </svg>
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{end}}
