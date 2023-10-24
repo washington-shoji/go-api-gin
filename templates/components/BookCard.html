@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div>
+        <div class=" flex justify-between">
             <button
                 class="flex justify-center items-center gap-2 bg-black rounded-md text-white shadow-md p-2 hover:ring-1 hover:ring-offset-1 ring-white border-white border-2"
                 href="#">
@@ -32,6 +32,17 @@
                         d="M13.243 3.2 7.359 9.081a.5.5 0 0 0-.136.256L6.51 12.9a.5.5 0 0 0 .59.59l3.566-.713a.5.5 0 0 0 .255-.136L16.8 6.757 13.243 3.2Z" />
                 </svg>
                 Edit
+            </button>
+
+            <button
+                class="flex justify-center items-center gap-2 bg-black rounded-md text-white shadow-md p-2 hover:ring-1 hover:ring-offset-1 ring-white border-white border-2 hover:text-red-600 hover:ring-red-600 hover:border-red-600"
+                href="#" hx-delete="/api/exp-html/home/{{ .ID}}" hx-target="#body-content" hx-swap="innerHTML">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    viewBox="0 0 18 20">
+                    <path
+                        d="M17 4h-4V2a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v2H1a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6h1a1 1 0 1 0 0-2ZM7 2h4v2H7V2Zm1 14a1 1 0 1 1-2 0V8a1 1 0 0 1 2 0v8Zm4 0a1 1 0 0 1-2 0V8a1 1 0 0 1 2 0v8Z" />
+                </svg>
+                Delete
             </button>
         </div>
     </div>
