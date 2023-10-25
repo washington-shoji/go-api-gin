@@ -132,7 +132,7 @@ func (handler *BookHandler) RenderBookForm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "index.html", gin.H{
+	ctx.HTML(http.StatusOK, "book-form", gin.H{
 		"Books": books,
 	})
 }
@@ -155,14 +155,18 @@ func (handler *BookHandler) CreateBookForm(ctx *gin.Context) {
 		}
 	}
 
-	books, err := handler.BookService.FindAll()
+	result, err := handler.BookService.FindAll()
 	if err != nil {
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"Books": books,
+	ctx.HTML(http.StatusOK, "home", gin.H{
+		"booksLen":   len(result),
+		"bookList":   result,
+		"titleOne":   "Title ONE",
+		"titleTwo":   "Title TWO",
+		"titleThree": "Title THREE",
 	})
 }
 
@@ -183,8 +187,49 @@ func (handler *BookHandler) RenderContent(ctx *gin.Context) {
 }
 
 func (handler *BookHandler) RenderHomepage(ctx *gin.Context) {
+
+	result, err := handler.BookService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
+
 	data := gin.H{
-		"item": "This is the home page",
+		"booksLen":   len(result),
+		"bookList":   result,
+		"titleOne":   "Title ONE",
+		"titleTwo":   "Title TWO",
+		"titleThree": "Title THREE",
+	}
+
+	ctx.HTML(http.StatusOK, "home", data)
+}
+
+func (handler *BookHandler) RenderDeleteBook(ctx *gin.Context) {
+	bookID := ctx.Param("id")
+	id, err := uuid.Parse(bookID)
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
+		return
+	}
+
+	if err := handler.BookService.Delete(id); err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Book does not exist"}})
+		return
+	}
+
+	result, err := handler.BookService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
+
+	data := gin.H{
+		"booksLen":   len(result),
+		"bookList":   result,
+		"titleOne":   "Title ONE",
+		"titleTwo":   "Title TWO",
+		"titleThree": "Title THREE",
 	}
 
 	ctx.HTML(http.StatusOK, "home", data)
