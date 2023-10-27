@@ -80,6 +80,8 @@ func NewRouter(
 	htmlRouter.GET("/base", bookHandler.RenderPartials)
 	htmlRouter.GET("/content", bookHandler.RenderContent)
 	htmlRouter.GET("/home", bookHandler.RenderHomepage)
+	htmlRouter.GET("/book-update/:id", bookHandler.RenderUpdateBookForm)
+	htmlRouter.PUT("/book-update/:id", bookHandler.RenderUpdateBook)
 	htmlRouter.DELETE("/home/:id", bookHandler.RenderDeleteBook)
 
 	return service
