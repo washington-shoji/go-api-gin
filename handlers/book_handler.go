@@ -234,3 +234,81 @@ func (handler *BookHandler) RenderDeleteBook(ctx *gin.Context) {
 
 	ctx.HTML(http.StatusOK, "home", data)
 }
+
+func (handler *BookHandler) RenderUpdateBook(ctx *gin.Context) {
+
+	if err := ctx.Request.Form; err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
+	bookID := ctx.Request.FormValue("id")
+	id, err := uuid.Parse(bookID)
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
+		return
+	}
+
+	fmt.Println("bookID", bookID)
+	fmt.Println("id", id)
+
+	updateBook := models.UpdateBookRequest{
+		ID:          id,
+		Title:       ctx.Request.FormValue("title"),
+		Description: ctx.Request.FormValue("description"),
+	}
+
+	if updateBook != (models.UpdateBookRequest{}) {
+		if err := handler.BookService.Update(id, &updateBook); err != nil {
+			fmt.Println("Error updating book", err)
+			helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Could not update book"}})
+			return
+		}
+	}
+
+	result, err := handler.BookService.FindAll()
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
+
+	data := gin.H{
+		"booksLen":   len(result),
+		"bookList":   result,
+		"titleOne":   "Title ONE",
+		"titleTwo":   "Title TWO",
+		"titleThree": "Title THREE",
+	}
+
+	ctx.HTML(http.StatusOK, "home", data)
+}
+
+func (handler *BookHandler) RenderUpdateBookForm(ctx *gin.Context) {
+	bookID := ctx.Param("id")
+	id, err := uuid.Parse(bookID)
+	if err != nil {
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
+		return
+	}
+
+	findByIDRequest := models.FindByIDBookRequest{}
+	findByIDRequest.ID = id
+
+	// Find the existing book by id
+	// To pass that data the form before updating it
+	existBook, err := handler.BookService.FindByID(id, &findByIDRequest)
+	if err != nil {
+		fmt.Println("Error updating book", err)
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Could not find book"}})
+		return
+	}
+
+	if err := ctx.Request.Form; err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
+	ctx.HTML(http.StatusOK, "book-form-update", gin.H{
+		"id":          existBook.ID,
+		"title":       existBook.Title,
+		"description": existBook.Description,
+	})
+}
