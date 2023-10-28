@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	cloudstorage "github.com/washington-shoji/gin-api/cloud_storage"
 	"github.com/washington-shoji/gin-api/databases"
 	"github.com/washington-shoji/gin-api/handlers"
 	"github.com/washington-shoji/gin-api/repositories"
@@ -24,6 +25,11 @@ func InitServer() {
 		log.Fatal(err)
 	}
 
+	cld, err := cloudstorage.CloudinaryConnection()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	validate := validator.New()
 
 	bookRepository := repositories.NewBookRepositoryImp(db)
@@ -31,7 +37,7 @@ func InitServer() {
 	tableTopGameRepository := repositories.NewTableTopGameRepositoryImpl(db)
 	dynamicDataRepository := repositories.NewDynamicDataRepositoryImpl(db)
 
-	bookService := services.NewBookService(bookRepository, validate)
+	bookService := services.NewBookService(bookRepository, validate, cld)
 	userAccService := services.NewUserAccountService(userAccRepository, validate)
 	tableTopGameService := services.NewTableTopGameService(tableTopGameRepository)
 	dynamicDataService := services.NewDynamicDataService(dynamicDataRepository)
