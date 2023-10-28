@@ -18,3 +18,14 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 		ctx.Next()
 	}
 }
+
+func JwtAuthMiddlewareCookie() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		err := helpers.TokenValidCookie(ctx)
+		if err != nil {
+			ctx.Redirect(http.StatusTemporaryRedirect, "/api/auth")
+			return
+		}
+		ctx.Next()
+	}
+}
