@@ -70,3 +70,20 @@ func ExtractTokenUsername(ctx *gin.Context) (string, error) {
 
 	return "", nil
 }
+
+func TokenValidCookie(ctx *gin.Context) error {
+	tokenString, err := ctx.Cookie("jwt")
+	if err != nil {
+		return err
+	}
+	if _, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(config.EnvConfig("JWT_SECRET")), nil
+	}); err != nil {
+		return err
+	}
+
+	return nil
+}
