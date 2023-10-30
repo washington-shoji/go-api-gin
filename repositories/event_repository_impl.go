@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/washington-shoji/gin-api/models"
@@ -81,13 +82,67 @@ func (repo *EventRepositoryImp) Update(event *models.Event) error {
 }
 
 func (repo *EventRepositoryImp) Delete(id *uuid.UUID) error {
-	panic("unimplemented")
-}
+	query := `
+	DELETE FROM event_table 
+	WHERE id = $1
+	`
 
-func (repo *EventRepositoryImp) FindAll() ([]*models.Event, error) {
-	panic("unimplemented")
+	_, err := repo.Database.Query(query, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (repo *EventRepositoryImp) FindByID(id *uuid.UUID) (*models.Event, error) {
-	panic("unimplemented")
+	query := `SELECT FROM event_table WHERE id=$1`
+
+	rows, err := repo.Database.Query(query, id)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		return scanIntoEvent(rows)
+	}
+
+	return nil, fmt.Errorf("event %d not found", id)
+}
+
+func (repo *EventRepositoryImp) FindAll() ([]*models.Event, error) {
+	query := `SELECT * from event_table`
+	rows, err := repo.Database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+
+	events := []*models.Event{}
+	for rows.Next() {
+		event, err := scanIntoEvent(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		events = append(events, event)
+	}
+
+	return events, nil
+}
+
+func scanIntoEvent(rows *sql.Rows) (*models.Event, error) {
+	event := &models.Event{}
+	err := rows.Scan(
+		&event.ID,
+		&event.Title,
+		&event.ShortDescription,
+		&event.Description,
+		&event.ImageUrl,
+		&event.Date,
+		&event.Registration,
+		&event.CreatedAt,
+		&event.UpdatedAt,
+	)
+
+	return event, err
 }
