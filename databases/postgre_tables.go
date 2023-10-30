@@ -60,6 +60,18 @@ func CreateTables(db *sql.DB) error {
 		updated_at TIMESTAMP,
 		deleted_at TIMESTAMP
 	);
+	CREATE TABLE IF NOT EXISTS table_event (
+		id uuid PRIMARY KEY NOT NULL,
+		title VARCHAR(100) UNIQUE NOT NULL,
+		short_description VARCHAR(200) NOT NULL,
+		description VARCHAR(1000) NOT NULL,
+		image_url VARCHAR(500) NOT NULL,
+		date TIMESTAMP NOT NULL,
+		registration TIMESTAMP NOT NULL,
+		created_at TIMESTAMP NOT NULL,
+		updated_at TIMESTAMP,
+		deleted_at TIMESTAMP
+	);
 	`
 
 	_, err := db.Exec(query)
