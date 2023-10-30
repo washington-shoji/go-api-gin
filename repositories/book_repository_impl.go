@@ -22,8 +22,8 @@ func NewBookRepositoryImp(Db *sql.DB) BookRepository {
 // Create implements BookRepository.
 func (b *BookRepositoryImp) Create(book *models.Book) (error error) {
 	query := `
-	INSERT INTO book (id, title, description, created_at)
-	VALUES ($1, $2, $3, $4)
+	INSERT INTO book (id, title, description, image_url, created_at)
+	VALUES ($1, $2, $3, $4, $5)
 	`
 
 	_, err := b.Database.Query(
@@ -31,6 +31,7 @@ func (b *BookRepositoryImp) Create(book *models.Book) (error error) {
 		book.ID,
 		book.Title,
 		book.Description,
+		book.ImageUrl,
 		book.CreatedAt,
 	)
 	if err != nil {
@@ -112,6 +113,7 @@ func scanIntoBook(rows *sql.Rows) (*models.Book, error) {
 		&book.ID,
 		&book.Title,
 		&book.Description,
+		&book.ImageUrl,
 		&book.CreatedAt,
 		&book.UpdatedAt,
 		&book.DeletedAt,
