@@ -142,9 +142,16 @@ func (handler *BookHandler) CreateBookForm(ctx *gin.Context) {
 		fmt.Println("Error parsing form", err)
 	}
 
+	file, header, err := ctx.Request.FormFile("image")
+	if err != nil {
+		fmt.Println("Error parsing form", err)
+	}
+
 	createBook := models.CreateBookRequest{
 		Title:       ctx.Request.FormValue("title"),
 		Description: ctx.Request.FormValue("description"),
+		ImageFile:   file,
+		ImageHeader: header,
 	}
 
 	if createBook != (models.CreateBookRequest{}) {
