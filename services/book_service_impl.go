@@ -1,8 +1,11 @@
 package services
 
 import (
+	"context"
 	"time"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/washington-shoji/gin-api/models"
@@ -12,14 +15,18 @@ import (
 type BookServiceImpl struct {
 	BookRepository repositories.BookRepository
 	Validate       *validator.Validate
+	Cloudinary     *cloudinary.Cloudinary
 }
 
-func NewBookService(bookRepository repositories.BookRepository, validate *validator.Validate) BookService {
+func NewBookService(bookRepository repositories.BookRepository, validate *validator.Validate, Cloudinary *cloudinary.Cloudinary) BookService {
 	return &BookServiceImpl{
 		BookRepository: bookRepository,
 		Validate:       validate,
+		Cloudinary:     Cloudinary,
 	}
 }
+
+var ctx = context.Background()
 
 // Create implements BookService.
 func (b *BookServiceImpl) Create(book *models.CreateBookRequest) (error error) {
@@ -31,10 +38,18 @@ func (b *BookServiceImpl) Create(book *models.CreateBookRequest) (error error) {
 	id := uuid.New()
 	time := time.Now()
 
+	result, err := b.Cloudinary.Upload.Upload(ctx, book.ImageFile, uploader.UploadParams{
+		PublicID: book.ImageHeader.Filename,
+	})
+	if err != nil {
+		return err
+	}
+
 	bookModel := models.Book{
 		ID:          id,
 		Title:       book.Title,
 		Description: book.Description,
+		ImageUrl:    result.SecureURL,
 		CreatedAt:   time,
 	}
 
@@ -77,6 +92,7 @@ func (b *BookServiceImpl) FindAll() (books []*models.BookResponse, error error) 
 			ID:          rst_item.ID,
 			Title:       rst_item.Title,
 			Description: rst_item.Description,
+			ImageUrl:    rst_item.ImageUrl,
 		})
 	}
 	return resp, nil
