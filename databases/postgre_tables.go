@@ -60,7 +60,7 @@ func CreateTables(db *sql.DB) error {
 		updated_at TIMESTAMP,
 		deleted_at TIMESTAMP
 	);
-	CREATE TABLE IF NOT EXISTS table_event (
+	CREATE TABLE IF NOT EXISTS event_table (
 		id uuid PRIMARY KEY NOT NULL,
 		title VARCHAR(100) UNIQUE NOT NULL,
 		short_description VARCHAR(200) NOT NULL,
