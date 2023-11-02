@@ -32,7 +32,6 @@ func (handler *EventHandler) Create(ctx *gin.Context) {
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
-
 	resp := SuccessMessage{}
 	resp.Message = "Created successfully"
 
