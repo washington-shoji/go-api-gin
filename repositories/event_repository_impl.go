@@ -18,7 +18,7 @@ func NewEventRepositoryImp(Db *sql.DB) EventRepository {
 	}
 }
 
-func (repo *EventRepositoryImp) Create(event *models.Event) error {
+func (repo *EventRepositoryImp) Create(event models.Event) error {
 	query := `INSERT event_table (
 		id, 
 		title, 
@@ -49,7 +49,7 @@ func (repo *EventRepositoryImp) Create(event *models.Event) error {
 	return nil
 }
 
-func (repo *EventRepositoryImp) Update(event *models.Event) error {
+func (repo *EventRepositoryImp) Update(event models.Event) error {
 	query := `UPDATE event_table 
 	SET
 	title = $2, 
@@ -81,7 +81,7 @@ func (repo *EventRepositoryImp) Update(event *models.Event) error {
 	return nil
 }
 
-func (repo *EventRepositoryImp) Delete(id *uuid.UUID) error {
+func (repo *EventRepositoryImp) Delete(id uuid.UUID) error {
 	query := `
 	DELETE FROM event_table 
 	WHERE id = $1
@@ -95,7 +95,7 @@ func (repo *EventRepositoryImp) Delete(id *uuid.UUID) error {
 	return nil
 }
 
-func (repo *EventRepositoryImp) FindByID(id *uuid.UUID) (*models.Event, error) {
+func (repo *EventRepositoryImp) FindByID(id uuid.UUID) (*models.Event, error) {
 	query := `SELECT FROM event_table WHERE id=$1`
 
 	rows, err := repo.Database.Query(query, id)
