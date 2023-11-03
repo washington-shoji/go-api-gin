@@ -35,16 +35,19 @@ func InitServer() {
 	bookRepository := repositories.NewBookRepositoryImp(db)
 	userAccRepository := repositories.NewUserAccountRePository(db)
 	tableTopGameRepository := repositories.NewTableTopGameRepositoryImpl(db)
+	eventRepository := repositories.NewEventRepositoryImp(db)
 	dynamicDataRepository := repositories.NewDynamicDataRepositoryImpl(db)
 
 	bookService := services.NewBookService(bookRepository, validate, cld)
 	userAccService := services.NewUserAccountService(userAccRepository, validate)
 	tableTopGameService := services.NewTableTopGameService(tableTopGameRepository)
+	eventService := services.NewEventService(eventRepository, cld)
 	dynamicDataService := services.NewDynamicDataService(dynamicDataRepository)
 
 	bookHandler := handlers.NewBookHandler(bookService)
 	userAccHandler := handlers.NewUserAccountHandler(userAccService)
 	tableTopGameHandler := handlers.NewTableTopGameHandler(tableTopGameService)
+	eventHandler := handlers.NewEventHandler(eventService)
 	dynamicDataHandler := handlers.NewDynamicDataHandler(dynamicDataService)
 
 	loginService := services.NewLoginService(userAccRepository, validate)
@@ -59,6 +62,7 @@ func InitServer() {
 		loginHandler,
 		tableTopGameHandler,
 		dynamicDataHandler,
+		eventHandler,
 		expHandler,
 	)
 
