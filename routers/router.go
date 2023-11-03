@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/washington-shoji/gin-api/handlers"
+	"github.com/washington-shoji/gin-api/middleware"
 )
 
 func NewRouter(
@@ -14,7 +15,9 @@ func NewRouter(
 	loginHandler *handlers.LoginHandler,
 	tableTopGameHandler *handlers.TableTopGameHandler,
 	dynamicData *handlers.DynamicDataHandler,
+	eventHandler *handlers.EventHandler,
 	expHandler *handlers.ExpHandler,
+
 ) *gin.Engine {
 	service := gin.Default()
 
@@ -37,8 +40,11 @@ func NewRouter(
 
 	router := service.Group("/api")
 
-	loginRouter := router.Group("/login")
+	loginRouter := router.Group("/auth")
+	loginRouter.GET("", loginHandler.LoginRenderForm)
 	loginRouter.POST("", loginHandler.Login)
+	loginRouter.POST("/login", loginHandler.LoginRenderAuth)
+	loginRouter.POST("/logout", loginHandler.LogOutAuth)
 
 	bookRouter := router.Group("/book")
 	//bookRouter.Use(middleware.JwtAuthMiddleware())
@@ -62,6 +68,13 @@ func NewRouter(
 	tableTopGameRouter.PATCH("/:id", tableTopGameHandler.Update)
 	tableTopGameRouter.DELETE("/:id", tableTopGameHandler.Delete)
 
+	eventRouter := router.Group("/event")
+	eventRouter.GET("", eventHandler.GetAllEvents)
+	eventRouter.GET("/:id", eventHandler.GetEventByID)
+	eventRouter.POST("", eventHandler.Create)
+	eventRouter.PATCH("/:id", eventHandler.Update)
+	eventRouter.DELETE("/:id", eventHandler.Delete)
+
 	dynamicDataRouter := router.Group("/dynamic")
 	dynamicDataRouter.GET("", dynamicData.FindAll)
 	dynamicDataRouter.GET("/:id", dynamicData.FindByID)
@@ -74,6 +87,8 @@ func NewRouter(
 	expRouter.GET("", expHandler.ExpGetAll)
 
 	htmlRouter := router.Group("/exp-html")
+	htmlRouter.Use(middleware.JwtAuthMiddlewareCookie())
+
 	htmlRouter.GET("/book", bookHandler.RenderBookForm)
 	htmlRouter.POST("/book", bookHandler.CreateBookForm)
 
