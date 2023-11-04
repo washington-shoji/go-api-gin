@@ -48,7 +48,9 @@ func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 		CreatedAt:        time,
 	}
 
-	eventSer.EventRepository.Create(eventModel)
+	if err := eventSer.EventRepository.Create(eventModel); err != nil {
+		return err
+	}
 
 	return nil
 }
