@@ -20,14 +20,14 @@ type Event struct {
 }
 
 type EventReq struct {
-	Title            string               `json:"title" form:"title"`
-	ShortDescription string               `json:"shortDescription" form:"shortDescription"`
-	Description      string               `json:"description" form:"description"`
-	ImageFile        multipart.File       `json:"imageFile" form:"imageFile"`
-	ImageHeader      multipart.FileHeader `json:"imageHeader" form:"imageHeader"`
-	ImageUrl         string               `json:"imageUrl" form:"imageUrl"`
-	Date             time.Time            `json:"date" form:"date"`
-	Registration     time.Time            `json:"registration" form:"registration"`
+	Title            string                `json:"title" form:"title"`
+	ShortDescription string                `json:"shortDescription" form:"shortDescription"`
+	Description      string                `json:"description" form:"description"`
+	ImageFile        multipart.File        `json:"imageFile" form:"imageFile"`
+	ImageHeader      *multipart.FileHeader `json:"imageHeader" form:"imageHeader"`
+	ImageUrl         string                `json:"imageUrl" form:"imageUrl"`
+	Date             time.Time             `json:"date" form:"date"`
+	Registration     time.Time             `json:"registration" form:"registration"`
 }
 
 type EventRes struct {
