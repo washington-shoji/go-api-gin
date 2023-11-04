@@ -19,7 +19,7 @@ func NewEventRepositoryImp(Db *sql.DB) EventRepository {
 }
 
 func (repo *EventRepositoryImp) Create(event models.Event) error {
-	query := `INSERT event_table (
+	query := `INSERT INTO event_table (
 		id, 
 		title, 
 		short_description, 
