@@ -1,0 +1,18 @@
+{{ define "login"}}
+<!doctype html>
+<html lang="en">
+
+<head>
+    {{ template "Meta.html" . }}
+</head>
+
+<body>
+    <div class=" w-full overflow-y-scroll py-10 px-0 sm:px-6">
+        <main>
+            {{template "login-form"}}
+        </main>
+    </div>
+</body>
+
+</html>
+{{ end }}
