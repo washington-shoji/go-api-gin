@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -26,11 +27,13 @@ func (handler *EventHandler) Create(ctx *gin.Context) {
 	createEventReq := models.EventReq{}
 	err := ctx.ShouldBindJSON(&createEventReq)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := handler.EventService.Create(&createEventReq); err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
@@ -46,6 +49,7 @@ func (handler *EventHandler) Update(ctx *gin.Context) {
 	updateEventReq := models.EventReq{}
 	err := ctx.ShouldBindJSON(&updateEventReq)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
@@ -53,11 +57,13 @@ func (handler *EventHandler) Update(ctx *gin.Context) {
 	eventID := ctx.Param("id")
 	id, err := uuid.Parse(eventID)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := handler.EventService.Update(id, &updateEventReq); err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Event not found"}})
 		return
 	}
@@ -73,11 +79,13 @@ func (handler *EventHandler) Delete(ctx *gin.Context) {
 	eventID := ctx.Param("id")
 	id, err := uuid.Parse(eventID)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	if err := handler.EventService.Delete(id); err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Event does not exist"}})
 		return
 	}
@@ -93,12 +101,14 @@ func (handler *EventHandler) GetEventByID(ctx *gin.Context) {
 	eventID := ctx.Param("id")
 	id, err := uuid.Parse(eventID)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	result, err := handler.EventService.FindByID(id)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Event not found"}})
 		return
 	}
@@ -110,6 +120,7 @@ func (handler *EventHandler) GetEventByID(ctx *gin.Context) {
 func (handler *EventHandler) GetAllEvents(ctx *gin.Context) {
 	result, err := handler.EventService.FindAll()
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
 		return
 	}
@@ -124,14 +135,14 @@ func (handler *EventHandler) RenderCreateEventForm(ctx *gin.Context) {
 
 func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
 	if err := ctx.Request.Form; err != nil {
-		fmt.Println("request form", err)
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
 	file, header, err := ctx.Request.FormFile("imageFile")
 	if err != nil {
-		fmt.Println("file, header", err)
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid file input"}})
 		return
 	}
@@ -140,6 +151,7 @@ func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
 	date := ctx.Request.FormValue("date")
 	parsedDate, err := time.Parse(layout, date)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid date input"}})
 		return
 	}
@@ -147,6 +159,7 @@ func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
 	registration := ctx.Request.FormValue("registration")
 	parsedRegistration, err := time.Parse(layout, registration)
 	if err != nil {
+		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid registration input"}})
 		return
 	}
@@ -165,7 +178,8 @@ func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
 
 	if createEvent != (models.EventReq{}) {
 		if err := handler.EventService.Create(&createEvent); err != nil {
-			fmt.Println("Error creating book", err)
+			log.Printf("Error in Handler: %s", err)
+			fmt.Printf("Error in Handler: %s", err)
 			helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Could not create event"}})
 			return
 		}
