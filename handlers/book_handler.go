@@ -168,7 +168,7 @@ func (handler *BookHandler) CreateBookForm(ctx *gin.Context) {
 		return
 	}
 
-	ctx.HTML(http.StatusOK, "home", gin.H{
+	ctx.HTML(http.StatusOK, "book", gin.H{
 		"booksLen":   len(result),
 		"bookList":   result,
 		"titleOne":   "Title ONE",
@@ -193,7 +193,7 @@ func (handler *BookHandler) RenderContent(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "content", data)
 }
 
-func (handler *BookHandler) RenderHomepage(ctx *gin.Context) {
+func (handler *BookHandler) RenderBook(ctx *gin.Context) {
 
 	result, err := handler.BookService.FindAll()
 	if err != nil {
@@ -209,7 +209,7 @@ func (handler *BookHandler) RenderHomepage(ctx *gin.Context) {
 		"titleThree": "Title THREE",
 	}
 
-	ctx.HTML(http.StatusOK, "home", data)
+	ctx.HTML(http.StatusOK, "book", data)
 }
 
 func (handler *BookHandler) RenderDeleteBook(ctx *gin.Context) {
@@ -239,7 +239,7 @@ func (handler *BookHandler) RenderDeleteBook(ctx *gin.Context) {
 		"titleThree": "Title THREE",
 	}
 
-	ctx.HTML(http.StatusOK, "home", data)
+	ctx.HTML(http.StatusOK, "book", data)
 }
 
 func (handler *BookHandler) RenderUpdateBook(ctx *gin.Context) {
@@ -286,7 +286,7 @@ func (handler *BookHandler) RenderUpdateBook(ctx *gin.Context) {
 		"titleThree": "Title THREE",
 	}
 
-	ctx.HTML(http.StatusOK, "home", data)
+	ctx.HTML(http.StatusOK, "book", data)
 }
 
 func (handler *BookHandler) RenderUpdateBookForm(ctx *gin.Context) {
