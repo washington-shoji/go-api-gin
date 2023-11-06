@@ -38,8 +38,24 @@
                     <div class="sm:col-span-3">
                         <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Image
                             file</label>
-                        <div class="mt-2">
-                            <input type="file" name="imageFile" id="imageFile" placeholder="Upload image" class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6 file:mr-4 file:py-2 file:px-4
+                        <div class="flex mt-2" x-data="imageViewer()">
+                            <template x-if="!imageUrl">
+                                <div
+                                    class="flex items-center w-[100px] h-[100px] border rounded border-gray-200 bg-gray-100 sm:mr-2">
+                                    <svg class="w-[90px] h-[90px] text-gray-800 dark:text-gray-300" aria-hidden="true"
+                                        xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 20">
+                                        <path
+                                            d="M14.066 0H7v5a2 2 0 0 1-2 2H0v11a1.97 1.97 0 0 0 1.934 2h12.132A1.97 1.97 0 0 0 16 18V2a1.97 1.97 0 0 0-1.934-2ZM10.5 6a1.5 1.5 0 1 1 0 2.999A1.5 1.5 0 0 1 10.5 6Zm2.221 10.515a1 1 0 0 1-.858.485h-8a1 1 0 0 1-.9-1.43L5.6 10.039a.978.978 0 0 1 .936-.57 1 1 0 0 1 .9.632l1.181 2.981.541-1a.945.945 0 0 1 .883-.522 1 1 0 0 1 .879.529l1.832 3.438a1 1 0 0 1-.031.988Z" />
+                                        <path
+                                            d="M5 5V.13a2.96 2.96 0 0 0-1.293.749L.879 3.707A2.98 2.98 0 0 0 .13 5H5Z" />
+                                    </svg>
+                                </div>
+                            </template>
+                            <template x-if="imageUrl">
+                                <img class="w-[100px] h-[100px] rounded-md sm:mr-2" :src="imageUrl" />
+                            </template>
+                            <input type="file" name="imageFile" id="imageFile" placeholder="Upload image"
+                                accept="image/*" @change="fileChosen" class="block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-black sm:text-sm sm:leading-6 file:mr-4 file:py-2 file:px-4
                                 file:rounded-md file:border-0
                                 file:text-sm file:font-semibold
                                 file:bg-black file:text-white
