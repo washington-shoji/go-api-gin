@@ -185,11 +185,14 @@ func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
 		}
 	}
 
-	// result, err := handler.EventService.FindAll()
-	// if err != nil {
-	// 	helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
-	// 	return
-	// }
+	result, err := handler.EventService.FindAll()
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
+		return
+	}
 
-	ctx.HTML(http.StatusOK, "home", gin.H{})
+	ctx.HTML(http.StatusOK, "home", gin.H{
+		"data": result,
+	})
 }
