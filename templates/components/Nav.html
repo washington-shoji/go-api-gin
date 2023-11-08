@@ -20,7 +20,7 @@
     <div class="flex flex-col justify-between h-full shadow-2xl">
         <div class="mt-6">
             <a class="bg-slate-50 bg-opacity-10 flex items-center gap-1 p-1 rounded-sm my-2 hover:bg-slate-50 hover:text-black"
-                href="#" hx-get="/api/exp-html/home" hx-target="#body-content" hx-swap="outerHTML">
+                href="#" hx-get="/api/html/dashboard" hx-target="#body-content" hx-swap="outerHTML">
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 18 18">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -29,7 +29,16 @@
                 <span>Dashboard</span>
             </a>
             <a class="bg-slate-50 bg-opacity-10 flex items-center gap-1 p-1 rounded-sm my-2 hover:bg-slate-50 hover:text-black"
-                href="#" hx-get="/api/exp-html/content" hx-target="#body-content" hx-swap="outerHTML">
+                href="#" hx-get="/api/html/event" hx-target="#body-content" hx-swap="outerHTML">
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 20 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 1v3m5-3v3m5-3v3M1 7h7m1.506 3.429 2.065 2.065M19 7h-2M2 3h16a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm6 13H6v-2l5.227-5.292a1.46 1.46 0 0 1 2.065 2.065L8 16Z" />
+                </svg>
+                <span>Event</span>
+            </a>
+            <a class="bg-slate-50 bg-opacity-10 flex items-center gap-1 p-1 rounded-sm my-2 hover:bg-slate-50 hover:text-black"
+                href="#" hx-get="/api/html/book" hx-target="#body-content" hx-swap="outerHTML">
                 <svg class=" w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                     viewBox="0 0 16 20">
                     <path
@@ -52,7 +61,7 @@
                 <span>Settings</span>
             </a>
             <a class=" flex gap-1 items-center p-1 rounded-sm my-1 bg-red-600 bg-opacity-20 hover:bg-red-600 hover:text-black"
-                href="#">
+                href="#" hx-post="/api/auth/logout" hx-swap="none" hx-indicator="#processing" hx-disabled-elt="this">
                 <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                     viewBox="0 0 18 15">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
