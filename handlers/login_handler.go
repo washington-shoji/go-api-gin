@@ -66,7 +66,7 @@ func (handler *LoginHandler) LoginRenderAuth(ctx *gin.Context) {
 
 	ctx.SetCookie("jwt", result.Token, 3600, "/", "localhost", false, true)
 
-	ctx.Header("HX-Redirect", "/api/exp-html/base")
+	ctx.Header("HX-Redirect", "/api/html/base")
 }
 
 func (handler *LoginHandler) LogOutAuth(ctx *gin.Context) {
