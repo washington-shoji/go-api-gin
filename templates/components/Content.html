@@ -1,15 +1,26 @@
 {{define "content"}}
 <div id="body-content">
-    <h2>Latest Snippets</h2>
-    <p>There's nothing to see here yet!</p>
-    <p>New content {{ .item}}</p>
+    {{template "dashboard-header"}}
+    {{template "dashboard-body"}}
 </div>
 {{end}}
 
-{{define "home"}}
+{{define "dashboard"}}
+<div id="body-content">
+    {{template "dashboard-header"}}
+    {{template "dashboard-body"}}
+</div>
+{{end}}
+
+{{define "book"}}
 <div id="body-content">
     {{template "book-hero" .}}
     {{template "book-card-list" .}}
-    <!-- {{template "book-table" .}} -->
+</div>
+{{end}}
+
+{{define "event"}}
+<div id="body-content">
+    {{template "event-form"}}
 </div>
 {{end}}
