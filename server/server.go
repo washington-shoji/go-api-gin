@@ -54,6 +54,8 @@ func InitServer() {
 
 	loginHandler := handlers.NewLoginHandler(loginService)
 
+	dashboardHandler := handlers.NewDashboardHandler()
+
 	expHandler := handlers.NewExpHandler(db)
 
 	router := routers.NewRouter(
@@ -64,6 +66,7 @@ func InitServer() {
 		dynamicDataHandler,
 		eventHandler,
 		expHandler,
+		dashboardHandler,
 	)
 
 	// testMeta := exp.NewMetaDatabaseImp(db)
