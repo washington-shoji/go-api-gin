@@ -17,6 +17,7 @@ func NewRouter(
 	dynamicData *handlers.DynamicDataHandler,
 	eventHandler *handlers.EventHandler,
 	expHandler *handlers.ExpHandler,
+	dashboardHandler *handlers.DashboardHandler,
 
 ) *gin.Engine {
 	service := gin.Default()
@@ -86,15 +87,19 @@ func NewRouter(
 	expRouter.POST("", expHandler.ExpCreate)
 	expRouter.GET("", expHandler.ExpGetAll)
 
-	htmlRouter := router.Group("/exp-html")
+	htmlRouter := router.Group("/html")
 	htmlRouter.Use(middleware.JwtAuthMiddlewareCookie())
 
-	htmlRouter.GET("/book", bookHandler.RenderBookForm)
-	htmlRouter.POST("/book", bookHandler.CreateBookForm)
-
 	htmlRouter.GET("/base", bookHandler.RenderPartials)
-	htmlRouter.GET("/content", bookHandler.RenderContent)
-	htmlRouter.GET("/home", bookHandler.RenderHomepage)
+
+	htmlRouter.GET("/dashboard", dashboardHandler.RenderDashboard)
+	htmlRouter.GET("/event", eventHandler.RenderCreateEventForm)
+	htmlRouter.POST("/event", eventHandler.PostCreateEventForm)
+
+	htmlRouter.GET("/book", bookHandler.RenderBook)
+	htmlRouter.GET("/book-form", bookHandler.RenderBookForm)
+	htmlRouter.POST("/book-form", bookHandler.CreateBookForm)
+
 	htmlRouter.GET("/book-update/:id", bookHandler.RenderUpdateBookForm)
 	htmlRouter.PUT("/book-update/:id", bookHandler.RenderUpdateBook)
 	htmlRouter.DELETE("/home/:id", bookHandler.RenderDeleteBook)
