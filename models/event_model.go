@@ -13,7 +13,7 @@ type Event struct {
 	ShortDescription string     `json:"shortDescription"`
 	Description      string     `json:"description"`
 	ImageUrl         string     `json:"imageUrl"`
-	Date             time.Time  `json:"data"`
+	Date             time.Time  `json:"date"`
 	Registration     time.Time  `json:"registration"`
 	CreatedAt        time.Time  `json:"createdAt"`
 	UpdatedAt        *time.Time `json:"updatedAt"`
