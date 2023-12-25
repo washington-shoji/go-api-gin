@@ -25,7 +25,7 @@ func NewRouter(
 	service.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
-		AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+		AllowHeaders: []string{"Content-Type, access-control-allow-origin, access-control-allow-headers"},
 	}))
 
 	service.LoadHTMLGlob("templates/**/*")
@@ -42,10 +42,7 @@ func NewRouter(
 	router := service.Group("/api")
 
 	loginRouter := router.Group("/auth")
-	loginRouter.GET("", loginHandler.LoginRenderForm)
 	loginRouter.POST("", loginHandler.Login)
-	loginRouter.POST("/login", loginHandler.LoginRenderAuth)
-	loginRouter.POST("/logout", loginHandler.LogOutAuth)
 
 	bookRouter := router.Group("/book")
 	//bookRouter.Use(middleware.JwtAuthMiddleware())
@@ -89,20 +86,6 @@ func NewRouter(
 
 	htmlRouter := router.Group("/html")
 	htmlRouter.Use(middleware.JwtAuthMiddlewareCookie())
-
-	htmlRouter.GET("/base", bookHandler.RenderPartials)
-
-	htmlRouter.GET("/dashboard", dashboardHandler.RenderDashboard)
-	htmlRouter.GET("/event", eventHandler.RenderCreateEventForm)
-	htmlRouter.POST("/event", eventHandler.PostCreateEventForm)
-
-	htmlRouter.GET("/book", bookHandler.RenderBook)
-	htmlRouter.GET("/book-form", bookHandler.RenderBookForm)
-	htmlRouter.POST("/book-form", bookHandler.CreateBookForm)
-
-	htmlRouter.GET("/book-update/:id", bookHandler.RenderUpdateBookForm)
-	htmlRouter.PUT("/book-update/:id", bookHandler.RenderUpdateBook)
-	htmlRouter.DELETE("/home/:id", bookHandler.RenderDeleteBook)
 
 	return service
 }
