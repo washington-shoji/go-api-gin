@@ -1,10 +1,8 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -127,72 +125,4 @@ func (handler *EventHandler) GetAllEvents(ctx *gin.Context) {
 
 	ctx.Header("Content-Type", "application/json")
 	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: result})
-}
-
-func (handler *EventHandler) RenderCreateEventForm(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "event", gin.H{})
-}
-
-func (handler *EventHandler) PostCreateEventForm(ctx *gin.Context) {
-	if err := ctx.Request.Form; err != nil {
-		log.Printf("Error in Handler: %s", err)
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
-		return
-	}
-
-	file, header, err := ctx.Request.FormFile("imageFile")
-	if err != nil {
-		log.Printf("Error in Handler: %s", err)
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid file input"}})
-		return
-	}
-
-	const layout = "2006-01-02T15:04"
-	date := ctx.Request.FormValue("date")
-	parsedDate, err := time.Parse(layout, date)
-	if err != nil {
-		log.Printf("Error in Handler: %s", err)
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid date input"}})
-		return
-	}
-
-	registration := ctx.Request.FormValue("registration")
-	parsedRegistration, err := time.Parse(layout, registration)
-	if err != nil {
-		log.Printf("Error in Handler: %s", err)
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid registration input"}})
-		return
-	}
-
-	createEvent := models.EventReq{
-		Title:            ctx.Request.FormValue("title"),
-		ShortDescription: ctx.Request.FormValue("shortDescription"),
-		Description:      ctx.Request.FormValue("description"),
-		ImageFile:        file,
-		ImageHeader:      header,
-		Date:             parsedDate,
-		Registration:     parsedRegistration,
-	}
-
-	fmt.Println("createEvent", &createEvent)
-
-	if createEvent != (models.EventReq{}) {
-		if err := handler.EventService.Create(&createEvent); err != nil {
-			log.Printf("Error in Handler: %s", err)
-			fmt.Printf("Error in Handler: %s", err)
-			helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Could not create event"}})
-			return
-		}
-	}
-
-	result, err := handler.EventService.FindAll()
-	if err != nil {
-		log.Printf("Error in Handler: %s", err)
-		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadGateway, Error: []string{"Server Error"}})
-		return
-	}
-
-	ctx.HTML(http.StatusOK, "home", gin.H{
-		"data": result,
-	})
 }
