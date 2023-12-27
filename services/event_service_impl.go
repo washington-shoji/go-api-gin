@@ -25,7 +25,7 @@ func NewEventService(eventRepo repositories.EventRepository, cloudinary *cloudin
 
 func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 	id := uuid.New()
-	time := time.Now()
+	time := time.Now().UTC()
 
 	ctx := context.Background()
 
@@ -39,12 +39,13 @@ func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 
 	eventModel := models.Event{
 		ID:               id,
-		Title:            event.Title,
-		ShortDescription: event.ShortDescription,
-		Description:      event.Description,
+		Title:            event.EventDetails.Title,
+		ShortDescription: event.EventDetails.ShortDescription,
+		Description:      event.EventDetails.Description,
 		ImageUrl:         result.SecureURL,
-		Date:             event.Date,
-		Registration:     event.Registration,
+		ImagePublicId:    result.PublicID,
+		Date:             event.EventDetails.Date,
+		Registration:     event.EventDetails.Registration,
 		CreatedAt:        time,
 	}
 
@@ -56,30 +57,74 @@ func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 }
 
 func (eventSer *EventServiceImpl) Update(id uuid.UUID, event *models.EventReq) error {
-	if _, err := eventSer.EventRepository.FindByID(id); err != nil {
+	evt, err := eventSer.EventRepository.FindByID(id)
+	if err != nil {
 		return err
 	}
 
+	eventModel := &models.Event{}
 	time := time.Now()
-	eventModel := models.Event{
-		ID:               id,
-		Title:            event.Title,
-		ShortDescription: event.ShortDescription,
-		Description:      event.Description,
-		ImageUrl:         event.ImageUrl,
-		Date:             event.Date,
-		Registration:     event.Registration,
-		UpdatedAt:        &time,
+
+	ctx := context.Background()
+
+	if event.ImageFile != nil {
+		if _, err := eventSer.Cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{
+			PublicID:     evt.ImagePublicId,
+			ResourceType: "image",
+		}); err != nil {
+			return err
+		}
+
+		result, err := eventSer.Cloudinary.Upload.Upload(ctx, event.ImageFile, uploader.UploadParams{
+			PublicID: event.ImageHeader.Filename,
+		})
+
+		if err != nil {
+			return err
+		}
+
+		eventModel = &models.Event{
+			ID:               id,
+			Title:            event.EventDetails.Title,
+			ShortDescription: event.EventDetails.ShortDescription,
+			Description:      event.EventDetails.Description,
+			ImageUrl:         result.SecureURL,
+			ImagePublicId:    result.PublicID,
+			Date:             event.EventDetails.Date,
+			Registration:     event.EventDetails.Registration,
+			UpdatedAt:        &time,
+		}
+
+	} else {
+		eventModel = &models.Event{
+			ID:               id,
+			Title:            event.EventDetails.Title,
+			ShortDescription: event.EventDetails.ShortDescription,
+			Description:      event.EventDetails.Description,
+			ImageUrl:         *event.EventDetails.ImageUrl,
+			ImagePublicId:    *event.EventDetails.ImagePublicId,
+			Date:             event.EventDetails.Date,
+			Registration:     event.EventDetails.Registration,
+			UpdatedAt:        &time,
+		}
 	}
 
-	if err := eventSer.EventRepository.Update(eventModel); err != nil {
+	if err := eventSer.EventRepository.Update(*eventModel); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (eventSer *EventServiceImpl) Delete(id uuid.UUID) error {
-	if _, err := eventSer.EventRepository.FindByID(id); err != nil {
+	evt, err := eventSer.EventRepository.FindByID(id)
+	if err != nil {
+		return err
+	}
+
+	if _, err := eventSer.Cloudinary.Upload.Destroy(ctx, uploader.DestroyParams{
+		PublicID:     evt.ImagePublicId,
+		ResourceType: "image",
+	}); err != nil {
 		return err
 	}
 
@@ -102,6 +147,7 @@ func (eventSer *EventServiceImpl) FindByID(id uuid.UUID) (*models.EventRes, erro
 		ShortDescription: result.ShortDescription,
 		Description:      result.Description,
 		ImageUrl:         result.ImageUrl,
+		ImagePublicId:    &result.ImagePublicId,
 		Date:             result.Date,
 		Registration:     result.Registration,
 	}
@@ -123,6 +169,7 @@ func (eventSer *EventServiceImpl) FindAll() ([]*models.EventRes, error) {
 			ShortDescription: resp_item.ShortDescription,
 			Description:      resp_item.Description,
 			ImageUrl:         resp_item.ImageUrl,
+			ImagePublicId:    &resp_item.ImagePublicId,
 			Date:             resp_item.Date,
 			Registration:     resp_item.Registration,
 		})
