@@ -13,21 +13,27 @@ type Event struct {
 	ShortDescription string     `json:"shortDescription"`
 	Description      string     `json:"description"`
 	ImageUrl         string     `json:"imageUrl"`
+	ImagePublicId    string     `json:"publicId"`
 	Date             time.Time  `json:"date"`
 	Registration     time.Time  `json:"registration"`
 	CreatedAt        time.Time  `json:"createdAt"`
 	UpdatedAt        *time.Time `json:"updatedAt"`
 }
 
+type EventReqJson struct {
+	Title            string    `json:"title"`
+	ShortDescription string    `json:"shortDescription"`
+	Description      string    `json:"description"`
+	ImageUrl         *string   `json:"imageUrl"`
+	ImagePublicId    *string   `json:"publicId"`
+	Date             time.Time `json:"date"`
+	Registration     time.Time `json:"registration"`
+}
+
 type EventReq struct {
-	Title            string                `json:"title" form:"title"`
-	ShortDescription string                `json:"shortDescription" form:"shortDescription"`
-	Description      string                `json:"description" form:"description"`
-	ImageFile        multipart.File        `json:"imageFile" form:"imageFile"`
-	ImageHeader      *multipart.FileHeader `json:"imageHeader" form:"imageHeader"`
-	ImageUrl         string                `json:"imageUrl" form:"imageUrl"`
-	Date             time.Time             `json:"date" form:"date"`
-	Registration     time.Time             `json:"registration" form:"registration"`
+	ImageHeader  *multipart.FileHeader `form:"imageHeader"`
+	ImageFile    multipart.File        `form:"imageFile"`
+	EventDetails EventReqJson          `form:"eventDetails"`
 }
 
 type EventRes struct {
@@ -36,6 +42,7 @@ type EventRes struct {
 	ShortDescription string    `json:"shortDescription"`
 	Description      string    `json:"description"`
 	ImageUrl         string    `json:"imageUrl"`
+	ImagePublicId    *string   `json:"publicId"`
 	Date             time.Time `json:"date"`
 	Registration     time.Time `json:"registration"`
 }
