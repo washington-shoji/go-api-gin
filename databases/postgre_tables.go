@@ -66,11 +66,11 @@ func CreateTables(db *sql.DB) error {
 		short_description VARCHAR(200) NOT NULL,
 		description VARCHAR(1000) NOT NULL,
 		image_url VARCHAR(500) NOT NULL,
+		image_public_id VARCHAR(500) NOT NULL,
 		date TIMESTAMP NOT NULL,
 		registration TIMESTAMP NOT NULL,
 		created_at TIMESTAMP NOT NULL,
-		updated_at TIMESTAMP,
-		deleted_at TIMESTAMP
+		updated_at TIMESTAMP
 	);
 	`
 
