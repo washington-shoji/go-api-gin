@@ -22,12 +22,30 @@ func NewEventHandler(service services.EventService) *EventHandler {
 }
 
 func (handler *EventHandler) Create(ctx *gin.Context) {
-	createEventReq := models.EventReq{}
-	err := ctx.ShouldBindJSON(&createEventReq)
-	if err != nil {
+	if err := ctx.Request.Form; err != nil {
 		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
+	}
+
+	file, header, err := ctx.Request.FormFile("imageHeader")
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid file input"}})
+		return
+	}
+
+	eventReqJson := models.EventReq{}
+	if err := ctx.ShouldBind(&eventReqJson); err != nil {
+		log.Printf("Error in Handler: %s", err)
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
+		return
+	}
+
+	createEventReq := models.EventReq{
+		ImageHeader:  header,
+		ImageFile:    file,
+		EventDetails: eventReqJson.EventDetails,
 	}
 
 	if err := handler.EventService.Create(&createEventReq); err != nil {
@@ -44,19 +62,35 @@ func (handler *EventHandler) Create(ctx *gin.Context) {
 }
 
 func (handler *EventHandler) Update(ctx *gin.Context) {
-	updateEventReq := models.EventReq{}
-	err := ctx.ShouldBindJSON(&updateEventReq)
+	eventID := ctx.Param("id")
+	id, err := uuid.Parse(eventID)
 	if err != nil {
 		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
 		return
 	}
 
-	eventID := ctx.Param("id")
-	id, err := uuid.Parse(eventID)
-	if err != nil {
+	var eventReqJson models.EventReq
+
+	if err := ctx.ShouldBind(&eventReqJson); err != nil {
 		log.Printf("Error in Handler: %s", err)
 		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid input"}})
+		return
+	}
+
+	updateEventReq := models.EventReq{
+		EventDetails: eventReqJson.EventDetails,
+	}
+
+	// Handle file upload if present
+	if file, header, err := ctx.Request.FormFile("imageHeader"); err == nil {
+		defer file.Close()
+		updateEventReq.ImageHeader = header
+		updateEventReq.ImageFile = file
+	} else if err != http.ErrMissingFile {
+		// Handle file upload errors other than missing file
+		log.Printf("Error in Handler: %s", err)
+		helpers.WebResponseError(ctx, helpers.ResponseError{Status: http.StatusBadRequest, Error: []string{"Invalid file input"}})
 		return
 	}
 
@@ -69,8 +103,8 @@ func (handler *EventHandler) Update(ctx *gin.Context) {
 	resp := SuccessMessage{
 		Message: "Updated successfully",
 	}
-
 	helpers.WebResponseSuccessHandler(ctx, helpers.ResponseSuccess{Status: http.StatusOK, Data: resp})
+
 }
 
 func (handler *EventHandler) Delete(ctx *gin.Context) {
