@@ -19,16 +19,17 @@ func NewEventRepositoryImp(Db *sql.DB) EventRepository {
 }
 
 func (repo *EventRepositoryImp) Create(event models.Event) error {
-	query := `INSERT event_table (
+	query := `INSERT INTO event_table (
 		id, 
 		title, 
 		short_description, 
 		description, 
-		image_url, 
+		image_url,
+		image_public_id, 
 		date, 
 		registration, 
 		created_at)
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8)`
+		VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)`
 
 	_, err := repo.Database.Query(
 		query,
@@ -37,6 +38,7 @@ func (repo *EventRepositoryImp) Create(event models.Event) error {
 		event.ShortDescription,
 		event.Description,
 		event.ImageUrl,
+		event.ImagePublicId,
 		event.Date,
 		event.Registration,
 		event.CreatedAt,
@@ -54,11 +56,12 @@ func (repo *EventRepositoryImp) Update(event models.Event) error {
 	SET
 	title = $2, 
 	short_description = $3, 
-	description $4, 
-	image_url = $5, 
-	date = $6, 
-	registration $7,
-	updated_at = $8
+	description = $4, 
+	image_url = $5,
+	image_public_id = $6,  
+	date = $7, 
+	registration = $8,
+	updated_at = $9
 	WHERE id = $1  
 	`
 
@@ -69,6 +72,7 @@ func (repo *EventRepositoryImp) Update(event models.Event) error {
 		event.ShortDescription,
 		event.Description,
 		event.ImageUrl,
+		event.ImagePublicId,
 		event.Date,
 		event.Registration,
 		event.UpdatedAt,
@@ -96,7 +100,7 @@ func (repo *EventRepositoryImp) Delete(id uuid.UUID) error {
 }
 
 func (repo *EventRepositoryImp) FindByID(id uuid.UUID) (*models.Event, error) {
-	query := `SELECT FROM event_table WHERE id=$1`
+	query := `SELECT * FROM event_table WHERE id=$1`
 
 	rows, err := repo.Database.Query(query, id)
 	if err != nil {
@@ -138,6 +142,7 @@ func scanIntoEvent(rows *sql.Rows) (*models.Event, error) {
 		&event.ShortDescription,
 		&event.Description,
 		&event.ImageUrl,
+		&event.ImagePublicId,
 		&event.Date,
 		&event.Registration,
 		&event.CreatedAt,
