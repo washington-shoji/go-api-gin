@@ -21,6 +21,14 @@ func GenerateToken(username string) (string, error) {
 	return token.SignedString([]byte(config.EnvConfig("JWT_SECRET")))
 }
 
+func GenerateRefreshToken(username string) (string, error) {
+	claims := jwt.MapClaims{}
+	claims["username"] = username
+	claims["exp"] = time.Now().Add(time.Hour * 24 * 7).Unix()
+	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return refreshToken.SignedString([]byte(config.EnvConfig("JWT_SECRET")))
+}
+
 func TokenValid(ctx *gin.Context) error {
 	tokenString := ExtractToken(ctx)
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
