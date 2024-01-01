@@ -6,9 +6,9 @@ import (
 )
 
 type EventService interface {
-	Create(event *models.EventReq) error
-	Update(id uuid.UUID, event *models.EventReq) error
+	Create(event *models.EventRequest) error
+	Update(id uuid.UUID, event *models.EventRequest) error
 	Delete(id uuid.UUID) error
-	FindByID(id uuid.UUID) (*models.EventRes, error)
-	FindAll() (events []*models.EventRes, error error)
+	FindByID(id uuid.UUID) (*models.EventResponse, error)
+	FindAll() (events []*models.EventResponse, error error)
 }

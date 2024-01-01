@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -23,9 +24,23 @@ func NewEventService(eventRepo repositories.EventRepository, cloudinary *cloudin
 	}
 }
 
-func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
+func (eventSer *EventServiceImpl) Create(event *models.EventRequest) error {
 	id := uuid.New()
-	time := time.Now().UTC()
+	timeNow := time.Now().UTC()
+
+	const layout = "2006-01-02T15:04"
+
+	parsedDate, err := time.Parse(layout, event.EventDetails.Date)
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		return err
+	}
+
+	parsedRegistration, err := time.Parse(layout, event.EventDetails.Registration)
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		return err
+	}
 
 	ctx := context.Background()
 
@@ -44,9 +59,9 @@ func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 		Description:      event.EventDetails.Description,
 		ImageUrl:         result.SecureURL,
 		ImagePublicId:    result.PublicID,
-		Date:             event.EventDetails.Date,
-		Registration:     event.EventDetails.Registration,
-		CreatedAt:        time,
+		Date:             parsedDate,
+		Registration:     parsedRegistration,
+		CreatedAt:        timeNow,
 	}
 
 	if err := eventSer.EventRepository.Create(eventModel); err != nil {
@@ -56,14 +71,28 @@ func (eventSer *EventServiceImpl) Create(event *models.EventReq) error {
 	return nil
 }
 
-func (eventSer *EventServiceImpl) Update(id uuid.UUID, event *models.EventReq) error {
+func (eventSer *EventServiceImpl) Update(id uuid.UUID, event *models.EventRequest) error {
 	evt, err := eventSer.EventRepository.FindByID(id)
 	if err != nil {
 		return err
 	}
 
 	eventModel := &models.Event{}
-	time := time.Now()
+	timeNow := time.Now()
+
+	const layout = "2006-01-02T15:04"
+
+	parsedDate, err := time.Parse(layout, event.EventDetails.Date)
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		return err
+	}
+
+	parsedRegistration, err := time.Parse(layout, event.EventDetails.Registration)
+	if err != nil {
+		log.Printf("Error in Handler: %s", err)
+		return err
+	}
 
 	ctx := context.Background()
 
@@ -90,9 +119,9 @@ func (eventSer *EventServiceImpl) Update(id uuid.UUID, event *models.EventReq) e
 			Description:      event.EventDetails.Description,
 			ImageUrl:         result.SecureURL,
 			ImagePublicId:    result.PublicID,
-			Date:             event.EventDetails.Date,
-			Registration:     event.EventDetails.Registration,
-			UpdatedAt:        &time,
+			Date:             parsedDate,
+			Registration:     parsedRegistration,
+			UpdatedAt:        &timeNow,
 		}
 
 	} else {
@@ -103,9 +132,9 @@ func (eventSer *EventServiceImpl) Update(id uuid.UUID, event *models.EventReq) e
 			Description:      event.EventDetails.Description,
 			ImageUrl:         *event.EventDetails.ImageUrl,
 			ImagePublicId:    *event.EventDetails.ImagePublicId,
-			Date:             event.EventDetails.Date,
-			Registration:     event.EventDetails.Registration,
-			UpdatedAt:        &time,
+			Date:             parsedDate,
+			Registration:     parsedRegistration,
+			UpdatedAt:        &timeNow,
 		}
 	}
 
@@ -135,13 +164,13 @@ func (eventSer *EventServiceImpl) Delete(id uuid.UUID) error {
 	return nil
 }
 
-func (eventSer *EventServiceImpl) FindByID(id uuid.UUID) (*models.EventRes, error) {
+func (eventSer *EventServiceImpl) FindByID(id uuid.UUID) (*models.EventResponse, error) {
 	result, err := eventSer.EventRepository.FindByID(id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := &models.EventRes{
+	resp := &models.EventResponse{
 		ID:               result.ID,
 		Title:            result.Title,
 		ShortDescription: result.ShortDescription,
@@ -155,15 +184,15 @@ func (eventSer *EventServiceImpl) FindByID(id uuid.UUID) (*models.EventRes, erro
 	return resp, nil
 }
 
-func (eventSer *EventServiceImpl) FindAll() ([]*models.EventRes, error) {
+func (eventSer *EventServiceImpl) FindAll() ([]*models.EventResponse, error) {
 	result, err := eventSer.EventRepository.FindAll()
 	if err != nil {
 		return nil, err
 	}
 
-	resp := []*models.EventRes{}
+	resp := []*models.EventResponse{}
 	for _, resp_item := range result {
-		resp = append(resp, &models.EventRes{
+		resp = append(resp, &models.EventResponse{
 			ID:               resp_item.ID,
 			Title:            resp_item.Title,
 			ShortDescription: resp_item.ShortDescription,
