@@ -27,7 +27,6 @@ func NewEventService(eventRepo repositories.EventRepository, cloudinary *cloudin
 func (eventSer *EventServiceImpl) Create(event *models.EventRequest) error {
 	id := uuid.New()
 	timeNow := time.Now().UTC()
-
 	const layout = "2006-01-02T15:04"
 
 	parsedDate, err := time.Parse(layout, event.EventDetails.Date)

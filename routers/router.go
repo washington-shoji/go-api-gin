@@ -39,7 +39,8 @@ func NewRouter(
 	router := service.Group("/api")
 
 	loginRouter := router.Group("/auth")
-	loginRouter.POST("", loginHandler.Login)
+	loginRouter.POST("/login", loginHandler.Login)
+	loginRouter.POST("/refresh", loginHandler.RefreshTokenEndpoint)
 
 	bookRouter := router.Group("/book")
 	//bookRouter.Use(middleware.JwtAuthMiddleware())
