@@ -21,22 +21,22 @@ type Event struct {
 }
 
 type EventReqJson struct {
-	Title            string    `json:"title"`
-	ShortDescription string    `json:"shortDescription"`
-	Description      string    `json:"description"`
-	ImageUrl         *string   `json:"imageUrl"`
-	ImagePublicId    *string   `json:"publicId"`
-	Date             time.Time `json:"date"`
-	Registration     time.Time `json:"registration"`
+	Title            string  `json:"title"`
+	ShortDescription string  `json:"shortDescription"`
+	Description      string  `json:"description"`
+	ImageUrl         *string `json:"imageUrl"`
+	ImagePublicId    *string `json:"publicId"`
+	Date             string  `json:"date"`
+	Registration     string  `json:"registration"`
 }
 
-type EventReq struct {
+type EventRequest struct {
 	ImageHeader  *multipart.FileHeader `form:"imageHeader"`
 	ImageFile    multipart.File        `form:"imageFile"`
 	EventDetails EventReqJson          `form:"eventDetails"`
 }
 
-type EventRes struct {
+type EventResponse struct {
 	ID               uuid.UUID `json:"id"`
 	Title            string    `json:"title"`
 	ShortDescription string    `json:"shortDescription"`
